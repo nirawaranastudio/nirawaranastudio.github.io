@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="article:slug"        content="pbr-technique-dx12">
+  <meta name="article:category"    content="rendering">
+  <meta name="article:subcategory" content="directx">
+  <meta name="article:tags"        content="pbr, directx12, physically-based, brdf, ibl, deferred, hlsl">
+  <meta name="article:date"        content="2025-02-12">
+  <meta name="article:readtime"    content="15">
+  <meta name="article:author"      content="Admin">
+  <meta name="description"         content="Implementasi lengkap Physically Based Rendering (PBR) dengan DirectX 12: GBuffer setup, Cook-Torrance BRDF, IBL, dan tone mapping.">
+  <meta property="og:type"         content="article">
+  <meta property="og:title"        content="PBR Rendering Technique with DirectX 12 · Nirawarana">
+  <meta property="og:description"  content="GBuffer, Cook-Torrance BRDF, Image-Based Lighting, dan tone mapping — implementasi lengkap PBR pada pipeline DX12.">
+  <title>PBR Rendering Technique with DirectX 12 · Nirawarana</title>
+  <link rel="icon"       type="image/svg+xml" href="../../../../src/images/logo.svg">
+  <link rel="stylesheet" href="../../../../src/style.css">
+  <link rel="stylesheet" href="../../../src/article.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+
+<div id="reading-progress"></div>
+
+<header id="site-header">
+  <div class="container header-inner">
+    <a href="../../../../" class="logo">
+      <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <path d="M4 4v20M4 4l20 20M24 4v20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-text">Nirawarana</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../../../../">Beranda</a>
+      <a href="../../../../articles/">Semua Artikel</a>
+      <a href="../../../../articles/?category=rendering" class="active">Rendering</a>
+      <a href="../../../../articles/?category=gameengine">Game Engine</a>
+      <a href="../../../../articles/?category=architecture">Architecture</a>
+    </nav>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="article-hero">
+  <div class="article-hero-cover-placeholder" style="background: linear-gradient(135deg, #1a0a2e 0%, #2d1060 50%, #0a1a2e 100%); height: 320px; display:flex; align-items:center; justify-content:center;">
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style="opacity:0.3">
+      <circle cx="40" cy="40" r="30" stroke="#7c6fff" stroke-width="2"/>
+      <circle cx="40" cy="40" r="18" stroke="#a85be8" stroke-width="1.5"/>
+      <circle cx="40" cy="40" r="6"  fill="#7c6fff"/>
+      <line x1="40" y1="10" x2="40" y2="70" stroke="#7c6fff" stroke-width="1" opacity="0.5"/>
+      <line x1="10" y1="40" x2="70" y2="40" stroke="#7c6fff" stroke-width="1" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="container article-hero-meta">
+    <nav class="article-breadcrumb">
+      <a href="../../../../">Beranda</a><span class="sep">/</span>
+      <a href="../../../../articles/">Artikel</a><span class="sep">/</span>
+      <a href="../../../../articles/?category=rendering">Rendering</a><span class="sep">/</span>
+      <a href="../../../../articles/?category=rendering&subcategory=directx">DirectX 12</a><span class="sep">/</span>
+      <span aria-current="page">PBR Technique</span>
+    </nav>
+    <span class="article-category-badge" style="background:#e05a4711;color:#e05a47;border:1.5px solid #e05a4733;">
+      ● Rendering
+    </span>
+    <h1 class="article-title">PBR Rendering Technique with DirectX 12</h1>
+    <div class="article-byline">
+      <span>Oleh Admin</span>
+      <span class="dot-sep">·</span>
+      <time datetime="2025-02-12">12 Februari 2025</time>
+      <span class="dot-sep">·</span>
+      <span>⏱ 15 menit baca</span>
+    </div>
+    <div class="article-tags">
+      <span class="article-tag">#pbr</span>
+      <span class="article-tag">#directx12</span>
+      <span class="article-tag">#hlsl</span>
+      <span class="article-tag">#brdf</span>
+      <span class="article-tag">#ibl</span>
+      <span class="article-tag">#deferred-shading</span>
+    </div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="container">
+  <div class="article-layout">
+
+    <nav id="toc" aria-label="Daftar isi"></nav>
+
+    <article class="prose" id="article-content">
+
+      <p>
+        Physically Based Rendering (PBR) adalah standar de-facto di industri game dan film modern.
+        Pendekatan ini memodelkan interaksi cahaya dengan permukaan secara fisik akurat sehingga
+        material terlihat konsisten di berbagai kondisi pencahayaan. Artikel ini membahas
+        implementasi PBR lengkap menggunakan DirectX 12, mulai dari teori BRDF hingga
+        kode HLSL yang siap dijalankan.
+      </p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div>
+          <strong>Prasyarat:</strong> Artikel ini mengasumsikan kamu sudah familiar dengan
+          dasar-dasar DirectX 12 (command queue, descriptor heap, resource barriers).
+          Jika belum, baca dulu artikel
+          <a href="command-queue-dx12.html">Understanding Command Queues in DX12</a>.
+        </div>
+      </div>
+
+      <!-- ── SECTION 1 ── -->
+      <h2>1. Rendering Equation</h2>
+
+      <p>
+        Fondasi PBR adalah <strong>Rendering Equation</strong> yang diperkenalkan Kajiya (1986).
+        Equation ini menyatakan bahwa cahaya yang keluar dari titik <em>p</em>
+        ke arah <em>ω<sub>o</sub></em> adalah penjumlahan dari emisi langsung
+        dan integral atas seluruh cahaya masuk dari semua arah di hemisphere.
+      </p>
+
+      <p class="formula">
+        L<sub>o</sub>(p, ω<sub>o</sub>) = L<sub>e</sub>(p, ω<sub>o</sub>)
+        + ∫<sub>Ω</sub> f<sub>r</sub>(p, ω<sub>i</sub>, ω<sub>o</sub>)
+        L<sub>i</sub>(p, ω<sub>i</sub>) (n · ω<sub>i</sub>) dω<sub>i</sub>
+      </p>
+
+      <p>
+        Dalam konteks real-time rendering, integral ini didekati melalui
+        kombinasi <strong>direct lighting</strong> (jumlah terbatas light source)
+        dan <strong>indirect lighting</strong> melalui Image-Based Lighting (IBL).
+      </p>
+
+      <!-- ── SECTION 2 ── -->
+      <h2>2. Cook-Torrance BRDF</h2>
+
+      <p>
+        BRDF yang dipakai di PBR modern adalah <strong>Cook-Torrance microfacet model</strong>.
+        Ia memodelkan permukaan sebagai kumpulan microfacet kecil, masing-masing bertindak sebagai
+        cermin sempurna. BRDF-nya terbagi menjadi dua komponen:
+      </p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Komponen</th><th>Simbol</th><th>Deskripsi</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Diffuse</td><td>f<sub>Lambert</sub></td><td>Lambertian — albedo / π</td></tr>
+            <tr><td>Specular D</td><td>NDF (GGX/Trowbridge-Reitz)</td><td>Normal Distribution — konsentrasi microfacet</td></tr>
+            <tr><td>Specular G</td><td>Geometry (Smith-GGX)</td><td>Self-shadowing antar microfacet</td></tr>
+            <tr><td>Specular F</td><td>Fresnel (Schlick)</td><td>Rasio cahaya yang direfleksikan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="formula">
+        f<sub>r</sub> = f<sub>Lambert</sub> + (D · G · F) / (4 · (n·ω<sub>o</sub>) · (n·ω<sub>i</sub>))
+      </p>
+
+      <h3>HLSL — GGX Normal Distribution Function</h3>
+
+      <pre><code class="language-hlsl">// GGX / Trowbridge-Reitz NDF
+// N = surface normal, H = half-vector, roughness = material roughness [0..1]
+float DistributionGGX(float3 N, float3 H, float roughness)
+{
+    float a      = roughness * roughness;
+    float a2     = a * a;
+    float NdotH  = max(dot(N, H), 0.0f);
+    float NdotH2 = NdotH * NdotH;
+
+    float nom   = a2;
+    float denom = (NdotH2 * (a2 - 1.0f) + 1.0f);
+    denom = PI * denom * denom;
+
+    return nom / max(denom, 0.0000001f);
+}
+
+// Smith's Schlick-GGX Geometry Function
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float r = (roughness + 1.0f);
+    float k = (r * r) / 8.0f;
+    return NdotV / (NdotV * (1.0f - k) + k);
+}
+
+float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0f);
+    float NdotL = max(dot(N, L), 0.0f);
+    return GeometrySchlickGGX(NdotV, roughness)
+         * GeometrySchlickGGX(NdotL, roughness);
+}
+
+// Fresnel-Schlick Approximation
+// F0 = base reflectance at normal incidence (0.04 for dielectric, albedo for metal)
+float3 FresnelSchlick(float cosTheta, float3 F0)
+{
+    return F0 + (1.0f - F0) * pow(clamp(1.0f - cosTheta, 0.0f, 1.0f), 5.0f);
+}
+</code></pre>
+
+      <!-- ── SECTION 3 ── -->
+      <h2>3. GBuffer Setup (Deferred Shading)</h2>
+
+      <p>
+        PBR paling efisien diimplementasikan dengan <strong>deferred shading</strong>:
+        geometry pass mengisi GBuffer, lalu lighting pass membaca GBuffer untuk menghitung shading.
+        Ini memungkinkan banyak light source tanpa overhead per-geometry.
+      </p>
+
+      <div class="mermaid">
+flowchart LR
+    subgraph GP["Geometry Pass"]
+      A[Draw Meshes] --> B[GBuffer\nAlbedo/Metallic/Roughness/Normal]
+    end
+    subgraph LP["Lighting Pass"]
+      C[Read GBuffer] --> D[Cook-Torrance BRDF]
+      D --> E[Direct Lights]
+      D --> F[IBL Ambient]
+      E --> G[HDR Buffer]
+      F --> G
+    end
+    subgraph PP["Post Process"]
+      G --> H[Tone Mapping]
+      H --> I[Swap Chain Present]
+    end
+    GP --> LP --> PP
+      </div>
+
+      <h3>GBuffer Layout</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>RT Slot</th><th>Format</th><th>R</th><th>G</th><th>B</th><th>A</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>RT0</td><td>RGBA8_UNORM</td><td colspan="3">Albedo (Base Color)</td><td>AO</td></tr>
+            <tr><td>RT1</td><td>RGBA16_FLOAT</td><td colspan="3">World Normal (encoded)</td><td>—</td></tr>
+            <tr><td>RT2</td><td>RGBA8_UNORM</td><td>Metallic</td><td>Roughness</td><td colspan="2">Emissive mask</td></tr>
+            <tr><td>DSV</td><td>D32_FLOAT</td><td colspan="4">Depth</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>C++ — Membuat GBuffer Render Targets</h3>
+
+<pre><code class="language-cpp">struct GBuffer {
+    Microsoft::WRL::ComPtr&lt;ID3D12Resource&gt; albedoAO;
+    Microsoft::WRL::ComPtr&lt;ID3D12Resource&gt; normal;
+    Microsoft::WRL::ComPtr&lt;ID3D12Resource&gt; metallicRoughness;
+    Microsoft::WRL::ComPtr&lt;ID3D12Resource&gt; depth;
+};
+
+GBuffer CreateGBuffer(ID3D12Device* device, UINT width, UINT height)
+{
+    auto makeRT = [&](DXGI_FORMAT fmt, D3D12_RESOURCE_STATES initState,
+                      const FLOAT* clearColor) {
+        D3D12_HEAP_PROPERTIES heap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+        D3D12_RESOURCE_DESC   desc = CD3DX12_RESOURCE_DESC::Tex2D(
+            fmt, width, height, 1, 1, 1, 0,
+            D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+
+        D3D12_CLEAR_VALUE clear = { fmt, {} };
+        memcpy(clear.Color, clearColor, sizeof(FLOAT) * 4);
+
+        Microsoft::WRL::ComPtr&lt;ID3D12Resource&gt; resource;
+        device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE,
+            &desc, initState, &clear, IID_PPV_ARGS(&resource));
+        return resource;
+    };
+
+    GBuffer gb;
+    const FLOAT black[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+    gb.albedoAO          = makeRT(DXGI_FORMAT_R8G8B8A8_UNORM,
+                                  D3D12_RESOURCE_STATE_RENDER_TARGET, black);
+    gb.normal            = makeRT(DXGI_FORMAT_R16G16B16A16_FLOAT,
+                                  D3D12_RESOURCE_STATE_RENDER_TARGET, black);
+    gb.metallicRoughness = makeRT(DXGI_FORMAT_R8G8B8A8_UNORM,
+                                  D3D12_RESOURCE_STATE_RENDER_TARGET, black);
+
+    // Depth
+    D3D12_HEAP_PROPERTIES heap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+    D3D12_RESOURCE_DESC   depthDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+        DXGI_FORMAT_D32_FLOAT, width, height, 1, 1, 1, 0,
+        D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+    D3D12_CLEAR_VALUE depthClear = { DXGI_FORMAT_D32_FLOAT, { 1.0f, 0 } };
+    device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE,
+        &depthDesc, D3D12_RESOURCE_STATE_DEPTH_WRITE,
+        &depthClear, IID_PPV_ARGS(&gb.depth));
+
+    return gb;
+}
+</code></pre>
+
+      <!-- ── SECTION 4 ── -->
+      <h2>4. Lighting Pass — Full PBR Shader</h2>
+
+      <p>
+        Lighting pass berjalan sebagai fullscreen triangle. Setiap pixel membaca GBuffer,
+        merekonstruksi world position dari depth, lalu menghitung Cook-Torrance BRDF
+        untuk setiap light source.
+      </p>
+
+<pre><code class="language-hlsl">// lighting_pass.hlsl — PBR Deferred Lighting
+
+#define PI 3.14159265f
+
+// GBuffer textures
+Texture2D&lt;float4&gt; gAlbedoAO          : register(t0);
+Texture2D&lt;float4&gt; gNormal             : register(t1);
+Texture2D&lt;float4&gt; gMetallicRoughness  : register(t2);
+Texture2D&lt;float&gt;  gDepth              : register(t3);
+
+// IBL textures
+TextureCube&lt;float4&gt;  irradianceMap    : register(t4);
+TextureCube&lt;float4&gt;  prefilteredMap   : register(t5);
+Texture2D&lt;float2&gt;   brdfLUT          : register(t6);
+
+SamplerState         samplerLinear    : register(s0);
+SamplerState         samplerClamp     : register(s1);
+
+cbuffer FrameData : register(b0) {
+    float4x4 invViewProj;
+    float3   cameraPos;
+    float    padding;
+    // ... light data
+};
+
+// Reconstruct world position from depth + NDC
+float3 ReconstructWorldPos(float2 uv, float depth)
+{
+    float4 ndc = float4(uv * 2.0f - 1.0f, depth, 1.0f);
+    ndc.y = -ndc.y;
+    float4 world = mul(invViewProj, ndc);
+    return world.xyz / world.w;
+}
+
+float4 PSMain(float4 pos : SV_Position, float2 uv : TEXCOORD0) : SV_Target
+{
+    // Sample GBuffer
+    float4 albedoAO         = gAlbedoAO.Sample(samplerLinear, uv);
+    float4 normalSample     = gNormal.Sample(samplerLinear, uv);
+    float4 mrSample         = gMetallicRoughness.Sample(samplerLinear, uv);
+    float  depth            = gDepth.Sample(samplerClamp, uv);
+
+    float3 albedo    = albedoAO.rgb;
+    float  ao        = albedoAO.a;
+    float3 N         = normalize(normalSample.xyz * 2.0f - 1.0f);
+    float  metallic  = mrSample.r;
+    float  roughness = max(mrSample.g, 0.04f); // clamp avoid singularity
+
+    float3 worldPos = ReconstructWorldPos(uv, depth);
+    float3 V        = normalize(cameraPos - worldPos);
+
+    // Base reflectance F0: 0.04 for dielectric, albedo for metal
+    float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), albedo, metallic);
+
+    // ── Direct Lighting ──
+    float3 Lo = float3(0.0f, 0.0f, 0.0f);
+    // (iterate over point/directional lights — example: single directional)
+    {
+        float3 L         = normalize(float3(1.0f, 2.0f, 1.0f)); // light dir
+        float3 H         = normalize(V + L);
+        float3 radiance  = float3(5.0f, 5.0f, 5.0f);           // light color
+
+        float  NdotL = max(dot(N, L), 0.0f);
+        float  D     = DistributionGGX(N, H, roughness);
+        float  G     = GeometrySmith(N, V, L, roughness);
+        float3 F     = FresnelSchlick(max(dot(H, V), 0.0f), F0);
+
+        float3 num   = D * G * F;
+        float  denom = 4.0f * max(dot(N, V), 0.0f) * NdotL + 0.0001f;
+        float3 spec  = num / denom;
+
+        float3 kD    = (float3(1.0f, 1.0f, 1.0f) - F) * (1.0f - metallic);
+        Lo += (kD * albedo / PI + spec) * radiance * NdotL;
+    }
+
+    // ── IBL Ambient ──
+    float3 kS = FresnelSchlick(max(dot(N, V), 0.0f), F0);
+    float3 kD = (1.0f - kS) * (1.0f - metallic);
+
+    float3 irradiance = irradianceMap.Sample(samplerLinear, N).rgb;
+    float3 diffuse    = irradiance * albedo;
+
+    float3 R = reflect(-V, N);
+    uint   mipCount, w, h;
+    prefilteredMap.GetDimensions(0, w, h, mipCount);
+    float3 prefilteredColor = prefilteredMap.SampleLevel(
+        samplerLinear, R, roughness * (mipCount - 1)).rgb;
+    float2 brdf = brdfLUT.Sample(samplerClamp,
+        float2(max(dot(N, V), 0.0f), roughness));
+    float3 specIBL = prefilteredColor * (F0 * brdf.x + brdf.y);
+
+    float3 ambient = (kD * diffuse + specIBL) * ao;
+    float3 color   = ambient + Lo;
+
+    return float4(color, 1.0f);
+}
+</code></pre>
+
+      <!-- ── SECTION 5 ── -->
+      <h2>5. Image-Based Lighting (IBL)</h2>
+
+      <p>
+        IBL menyediakan ambient lighting yang realistis dari environment map.
+        Tiga resource diperlukan:
+      </p>
+
+      <ul class="checklist">
+        <li class="checked">
+          <strong>Irradiance Map</strong> — konvolusi diffuse dari environment cubemap,
+          merepresentasikan cahaya ambient yang diffuse.
+        </li>
+        <li class="checked">
+          <strong>Prefiltered Environment Map</strong> — konvolusi specular untuk berbagai
+          tingkat roughness, disimpan di mip levels.
+        </li>
+        <li class="checked">
+          <strong>BRDF LUT</strong> — lookup table 2D yang menyimpan integral specular BRDF
+          sebagai fungsi dari NdotV dan roughness.
+        </li>
+        <li>
+          <strong>Compute Shader</strong> untuk menghasilkan ketiga resource di atas
+          dari satu HDR environment map sumber.
+        </li>
+      </ul>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">🎯</span>
+        <div>
+          <strong>Tip — Pre-compute Offline:</strong> Irradiance map dan prefiltered env map
+          relatif mahal dihitung real-time. Lebih baik pre-compute saat load time atau bahkan
+          saat build time, simpan ke file DDS/KTX, dan load langsung ke GPU.
+        </div>
+      </div>
+
+      <!-- ── SECTION 6 ── -->
+      <h2>6. Tone Mapping</h2>
+
+      <p>
+        Output dari lighting pass adalah nilai HDR linear. Sebelum ditampilkan di
+        monitor (yang SDR), kita perlu <strong>tone mapping</strong> untuk memetakan
+        range HDR ke [0, 1].
+      </p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Operator</th><th>Karakteristik</th><th>Dipakai di</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Reinhard</td>
+              <td>Sederhana, sedikit washed-out di highlight</td>
+              <td>Prototype, indie</td>
+            </tr>
+            <tr>
+              <td>ACES Filmic</td>
+              <td>Kontras film yang kaya, industri standar</td>
+              <td>AAA games, film</td>
+            </tr>
+            <tr>
+              <td>Uncharted 2 (Hable)</td>
+              <td>Shoulder curve yang kuat, warm tone</td>
+              <td>Uncharted 2, banyak game 2010-an</td>
+            </tr>
+            <tr>
+              <td>AgX</td>
+              <td>Warna natural, menghindari hue shift</td>
+              <td>Blender, modern pipeline</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+<pre><code class="language-hlsl">// ACES Filmic Tone Mapping
+// Input: linear HDR color
+// Output: LDR [0, 1] gamut-compressed color
+float3 ACESFilmic(float3 x)
+{
+    const float a = 2.51f;
+    const float b = 0.03f;
+    const float c = 2.43f;
+    const float d = 0.59f;
+    const float e = 0.14f;
+    return saturate((x * (a * x + b)) / (x * (c * x + d) + e));
+}
+
+// Post-process pass (fullscreen)
+float4 PSPostProcess(float4 pos : SV_Position, float2 uv : TEXCOORD0) : SV_Target
+{
+    float3 hdrColor = hdrBuffer.Sample(samplerLinear, uv).rgb;
+
+    // Exposure adjustment
+    const float exposure = 1.0f;
+    hdrColor *= exposure;
+
+    // Tone map to LDR
+    float3 ldrColor = ACESFilmic(hdrColor);
+
+    // Gamma correction (linear -> sRGB)
+    // Omit if render target is SRGB format (hardware does it)
+    ldrColor = pow(ldrColor, 1.0f / 2.2f);
+
+    return float4(ldrColor, 1.0f);
+}
+</code></pre>
+
+      <!-- ── SECTION 7 ── -->
+      <h2>7. Pipeline State Object (PSO) Setup</h2>
+
+      <p>
+        DX12 memerlukan PSO yang menggabungkan semua state rendering sebelum draw call.
+        Berikut setup PSO untuk geometry pass dan lighting pass:
+      </p>
+
+<pre><code class="language-cpp">// Geometry Pass PSO
+D3D12_GRAPHICS_PIPELINE_STATE_DESC geoDesc = {};
+geoDesc.pRootSignature = rootSignature.Get();
+geoDesc.VS             = { vsBlob->GetBufferPointer(), vsBlob->GetBufferSize() };
+geoDesc.PS             = { psBlob->GetBufferPointer(), psBlob->GetBufferSize() };
+geoDesc.InputLayout    = { inputElements.data(), (UINT)inputElements.size() };
+geoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+geoDesc.SampleMask     = UINT_MAX;
+geoDesc.SampleDesc     = { 1, 0 };
+
+// Rasterizer — backface cull
+geoDesc.RasterizerState                = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+geoDesc.RasterizerState.CullMode       = D3D12_CULL_MODE_BACK;
+geoDesc.RasterizerState.FrontCounterClockwise = FALSE;
+
+// Depth stencil
+geoDesc.DepthStencilState              = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+geoDesc.DepthStencilState.DepthEnable  = TRUE;
+geoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+geoDesc.DepthStencilState.DepthFunc    = D3D12_COMPARISON_FUNC_LESS;
+geoDesc.DSVFormat                      = DXGI_FORMAT_D32_FLOAT;
+
+// GBuffer render targets
+geoDesc.NumRenderTargets = 3;
+geoDesc.RTVFormats[0]    = DXGI_FORMAT_R8G8B8A8_UNORM;   // Albedo + AO
+geoDesc.RTVFormats[1]    = DXGI_FORMAT_R16G16B16A16_FLOAT; // Normal
+geoDesc.RTVFormats[2]    = DXGI_FORMAT_R8G8B8A8_UNORM;   // Metallic + Roughness
+
+// Blend state — no blending untuk deferred geometry pass
+geoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+device->CreateGraphicsPipelineState(&geoDesc, IID_PPV_ARGS(&geoPSO));
+</code></pre>
+
+      <hr class="section-sep">
+
+      <!-- ── SECTION 8 ── -->
+      <h2>8. Checklist Implementasi Lengkap</h2>
+
+      <ul class="checklist">
+        <li class="checked">Setup GBuffer (3 render target + depth)</li>
+        <li class="checked">Buat PSO untuk geometry pass</li>
+        <li class="checked">Buat PSO untuk lighting pass (fullscreen triangle)</li>
+        <li class="checked">Implement HLSL: DistributionGGX, GeometrySmith, FresnelSchlick</li>
+        <li class="checked">Implement HLSL: Lighting pass yang baca GBuffer</li>
+        <li class="checked">Pre-compute irradiance map dari HDR environment</li>
+        <li class="checked">Pre-compute prefiltered env map (per roughness mip)</li>
+        <li class="checked">Generate BRDF LUT dengan compute shader</li>
+        <li>Implement tone mapping post-process pass (ACES)</li>
+        <li>Tambahkan gamma correction / sRGB write</li>
+        <li>Validasi output dengan renderdoc/PIX capture</li>
+        <li>Profile GPU timing per pass (timestamp queries)</li>
+      </ul>
+
+      <!-- ── SECTION 9 ── -->
+      <h2>9. Debugging & Validasi</h2>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div>
+          <strong>Common Pitfall:</strong> Normal yang tersimpan di GBuffer perlu encoding yang tepat.
+          Menyimpan raw float3 di RGBA8 akan kehilangan presisi. Gunakan
+          <strong>Octahedral encoding</strong> atau format RGBA16_FLOAT.
+        </div>
+      </div>
+
+      <p>
+        Gunakan <strong>RenderDoc</strong> atau <strong>PIX for Windows</strong> untuk
+        capture frame dan inspect setiap render target. Visualisasikan GBuffer secara
+        terpisah selama development:
+      </p>
+
+<pre><code class="language-hlsl">// Debug visualization — pilih buffer yang ingin dilihat via cbuffer flag
+float4 PSDebugView(float4 pos : SV_Position, float2 uv : TEXCOORD0) : SV_Target
+{
+    switch (debugMode) {
+        case 0: return gAlbedoAO.Sample(s, uv);             // Albedo
+        case 1: return gNormal.Sample(s, uv) * 0.5 + 0.5;  // Normal (remapped)
+        case 2: return gMetallicRoughness.Sample(s, uv).rrrr; // Metallic
+        case 3: return gMetallicRoughness.Sample(s, uv).gggg; // Roughness
+        case 4: return gAlbedoAO.Sample(s, uv).aaaa;        // AO
+        default: return float4(1,0,1,1); // error magenta
+    }
+}
+</code></pre>
+
+      <hr class="section-sep">
+
+      <!-- ── KESIMPULAN ── -->
+      <h2>Kesimpulan</h2>
+
+      <p>
+        PBR dengan deferred shading adalah fondasi rendering pipeline modern.
+        Dengan memahami Cook-Torrance BRDF, kamu bisa menghasilkan material
+        yang fisik akurat dan konsisten di berbagai kondisi lighting.
+        Langkah kunci yang perlu diingat:
+      </p>
+
+      <ul style="padding-left: 20px; list-style: disc; color: var(--text-muted); line-height: 2;">
+        <li>GBuffer menyimpan material properties, bukan warna final</li>
+        <li>BRDF terdiri dari D (distribusi), G (geometry), F (fresnel)</li>
+        <li>IBL memberikan ambient yang realistis — pre-compute saat load</li>
+        <li>Tone mapping adalah langkah wajib sebelum present ke layar</li>
+      </ul>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">📚</span>
+        <div>
+          <strong>Referensi Lanjutan:</strong>
+          <ul style="margin-top: 8px; padding-left: 20px; list-style: disc;">
+            <li><a href="https://learnopengl.com/PBR/Theory" target="_blank" rel="noopener">LearnOpenGL — PBR Theory</a></li>
+            <li><a href="https://google.github.io/filament/Filament.md.html" target="_blank" rel="noopener">Filament — Physically Based Rendering in Filament (Google)</a></li>
+            <li><a href="https://blog.selfshadow.com/publications/s2013-shading-course/" target="_blank" rel="noopener">SIGGRAPH 2013 — Physically Based Shading in Theory and Practice</a></li>
+          </ul>
+        </div>
+      </div>
+
+    </article>
+  </div><!-- .article-layout -->
+</div><!-- .container -->
+
+<!-- PREV / NEXT -->
+<div class="container">
+  <nav class="article-nav" aria-label="Navigasi artikel">
+    <a id="btn-prev-article" class="article-nav-btn prev" href="#">
+      <span class="nav-dir">← Artikel Sebelumnya</span>
+      <span class="nav-title">Memuat...</span>
+    </a>
+    <a id="btn-next-article" class="article-nav-btn next" href="#">
+      <span class="nav-dir">Artikel Berikutnya →</span>
+      <span class="nav-title">Memuat...</span>
+    </a>
+  </nav>
+  <section class="related-articles">
+    <h3 class="related-title">Artikel Terkait</h3>
+    <div id="related-grid" class="related-grid"></div>
+  </section>
+</div>
+
+<footer id="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <path d="M4 4v20M4 4l20 20M24 4v20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Nirawarana</span>
+    </div>
+    <p class="footer-meta">&copy; <span id="footer-year"></span> Nirawarana · Admin</p>
+    <nav class="footer-links">
+      <a href="../../../../">Beranda</a>
+      <a href="../../../../articles/">Semua Artikel</a>
+    </nav>
+  </div>
+</footer>
+
+<button id="scroll-top" aria-label="Kembali ke atas"></button>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-glsl.min.js"></script>
+<script src="../../../../src/data.js"></script>
+<script src="../../../src/article.js"></script>
+<script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
+
+</body>
+</html>

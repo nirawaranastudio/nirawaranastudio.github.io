@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Semua artikel Nirawarana — browse dan filter berdasarkan kategori atau cari topik spesifik.">
+  <title>Semua Artikel · Nirawarana</title>
+  <link rel="icon" type="image/svg+xml" href="../src/images/favicon.svg">
+  <link rel="stylesheet" href="../src/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    .archive-header {
+      padding: var(--sp-12) 0 var(--sp-8);
+      border-bottom: 1px solid var(--border);
+    }
+    .archive-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: var(--sp-2);
+    }
+    .archive-title {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      letter-spacing: -0.03em;
+    }
+    .archive-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: var(--sp-2);
+    }
+
+    /* Sort bar */
+    .sort-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-4) 0;
+      flex-wrap: wrap;
+    }
+    .sort-label {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      font-family: var(--font-mono);
+    }
+    .sort-btn {
+      padding: 5px 12px;
+      border-radius: var(--r-sm);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .sort-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .sort-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header id="site-header">
+    <div class="container header-inner">
+      <a href="../" class="logo">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M4 4v20M4 4l20 20M24 4v20"
+            stroke="currentColor" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">Nirawarana</span>
+      </a>
+      <nav class="main-nav">
+        <a href="../">Beranda</a>
+        <a href="." class="active">Semua Artikel</a>
+        <a href="?category=rendering">Rendering</a>
+        <a href="?category=gameengine">Game Engine</a>
+        <a href="?category=architecture">Architecture</a>
+      </nav>
+      <button id="theme-toggle" aria-label="Toggle dark mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <button id="mobile-menu-btn" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ARCHIVE HEADER -->
+  <div class="archive-header">
+    <div class="container">
+      <p class="archive-eyebrow">// archive</p>
+      <h1 class="archive-title">Semua Artikel</h1>
+      <p class="archive-sub">Browse semua tulisan, atau filter berdasarkan kategori dan kata kunci.</p>
+    </div>
+  </div>
+
+  <!-- SEARCH + CATEGORY PILLS -->
+  <div style="border-bottom: 1px solid var(--border);">
+    <div class="container" style="padding-top: var(--sp-5); padding-bottom: var(--sp-5);">
+      <div class="search-wrapper" style="max-width:400px; margin-bottom: var(--sp-4);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="search" id="search-input" placeholder="Cari artikel…" autocomplete="off" spellcheck="false" aria-label="Cari artikel">
+        <button id="clear-search" aria-label="Hapus pencarian" style="display:none">×</button>
+        <div id="search-suggestions" hidden aria-label="Saran pencarian" role="listbox"></div>
+      </div>
+
+      <div id="category-pills" role="group" aria-label="Filter kategori"></div>
+
+      <div class="sort-bar">
+        <span class="sort-label">Urutkan:</span>
+        <button class="sort-btn active" data-sort="date">Terbaru</button>
+        <button class="sort-btn" data-sort="readtime">Waktu Baca</button>
+        <button class="sort-btn" data-sort="title">A–Z</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTICLE LIST -->
+  <div class="container" style="padding-top: var(--sp-8);">
+    <div class="layout-content">
+
+      <main id="article-list">
+        <p class="result-info" id="result-info" aria-live="polite"></p>
+        <div id="articles-grid" role="list"></div>
+        <nav id="pagination" aria-label="Navigasi halaman"></nav>
+      </main>
+
+      <aside id="sidebar">
+        <div class="sidebar-widget">
+          <h3 class="sidebar-title">Artikel Terbaru</h3>
+          <ul id="recent-list"></ul>
+        </div>
+        <div class="sidebar-widget">
+          <h3 class="sidebar-title">Kategori</h3>
+          <ul id="sidebar-cat-list"></ul>
+        </div>
+        <div class="sidebar-widget">
+          <h3 class="sidebar-title">Tag Populer</h3>
+          <div id="tag-cloud" class="tag-cloud"></div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M4 4v20M4 4l20 20M24 4v20"
+            stroke="currentColor" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Nirawarana</span>
+      </div>
+      <p class="footer-meta">&copy; <span id="footer-year"></span> Nirawarana · Admin</p>
+      <nav class="footer-links">
+        <a href="../">Beranda</a>
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+
+  <button id="scroll-top" aria-label="Kembali ke atas"></button>
+
+  <!-- SCRIPTS -->
+  <!-- data.js path adjusted for articles/ depth -->
+  <script>
+    // Patch article URLs to be relative from articles/
+    // This script adapts paths so cards link correctly from this directory.
+  </script>
+  <script src="../src/data.js"></script>
+  <script src="../src/search.js"></script>
+  <script src="../src/app.js"></script>
+
+  <script>
+    document.getElementById("footer-year").textContent = new Date().getFullYear();
+
+    // Sort buttons — wire to state.sortKey from app.js
+    document.querySelectorAll(".sort-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".sort-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        if (typeof state !== "undefined") {
+          state.sortKey     = btn.dataset.sort;
+          state.currentPage = 1;
+          applyFilter();
+        }
+      });
+    });
+
+    // Sync active sort btn with URL state on load
+    document.addEventListener("DOMContentLoaded", () => {
+      const sort = new URLSearchParams(location.search).get("sort") || "date";
+      document.querySelectorAll(".sort-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.sort === sort);
+      });
+    }, { once: true });
+  </script>
+
+</body>
+</html>

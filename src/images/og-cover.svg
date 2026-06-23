@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#5340c8" stroke-width="0.4" opacity="0.25"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#0e0e0c"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#radial)" opacity="0.5"/>
+  <path d="M120 120v390M120 120l390 390M510 120v390" stroke="#7c6fff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="620" y="290" font-family="system-ui, sans-serif" font-weight="700" font-size="72" fill="#e6e3da" letter-spacing="-3">Nirawarana</text>
+  <text x="620" y="350" font-family="monospace" font-size="20" fill="#56544f" letter-spacing="4">// ENGINEERING KNOWLEDGE BASE</text>
+  <text x="620" y="410" font-family="monospace" font-size="16" fill="#3d3d3a">Rendering · Game Engine · Architecture · Engineering · Graphics</text>
+</svg>

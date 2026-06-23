@@ -1,1124 +1,199 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inkara — Blog Materi & Ilmu Pengetahuan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg-primary: #0D0F14;
-    --bg-secondary: #13161E;
-    --bg-card: #1A1D26;
-    --bg-card-hover: #1F2330;
-    --accent: #6366F1;
-    --accent-soft: #818CF8;
-    --accent-dim: rgba(99,102,241,0.12);
-    --text-primary: #E2E8F0;
-    --text-secondary: #94A3B8;
-    --text-muted: #475569;
-    --border: rgba(255,255,255,0.07);
-    --border-hover: rgba(99,102,241,0.3);
-    --nav-bg: rgba(13,15,20,0.85);
-  }
-  [data-theme="light"] {
-    --bg-primary: #F8F9FC;
-    --bg-secondary: #FFFFFF;
-    --bg-card: #FFFFFF;
-    --bg-card-hover: #F1F3F9;
-    --accent: #4F46E5;
-    --accent-soft: #6366F1;
-    --accent-dim: rgba(79,70,229,0.08);
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-muted: #94A3B8;
-    --border: rgba(0,0,0,0.07);
-    --border-hover: rgba(79,70,229,0.25);
-    --nav-bg: rgba(248,249,252,0.88);
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Nirawarana — Engineering knowledge base untuk Graphics Programmer, Game Engine Developer, Rendering Engineer, Mechanical Engineer, dan Software Architect.">
+  <meta name="author" content="Admin">
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:title"       content="Nirawarana — Knowledge for Engineers">
+  <meta property="og:description" content="Deep-dive articles on rendering, game engine, architecture, engineering, and graphics programming.">
+  <meta property="og:image"       content="src/images/og-cover.png">
+  <meta property="og:url"         content=""><!-- set to your GitHub Pages URL -->
 
-  html { scroll-behavior: smooth; }
+  <title>Nirawarana — Knowledge for Engineers</title>
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.6;
-    transition: background 0.3s ease, color 0.3s ease;
-    -webkit-font-smoothing: antialiased;
-  }
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="src/images/favicon.svg">
 
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: var(--nav-bg);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 64px;
-    display: flex; align-items: center; justify-content: space-between;
-    transition: background 0.3s ease;
-  }
-  .nav-logo {
-    font-family: 'Fraunces', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: -0.5px;
-    text-decoration: none;
-  }
-  .nav-logo span { color: var(--accent); }
-  .nav-links {
-    display: flex; align-items: center; gap: 2rem;
-    list-style: none;
-  }
-  .nav-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: color 0.2s;
-    letter-spacing: 0.01em;
-  }
-  .nav-links a:hover { color: var(--text-primary); }
-  .nav-right { display: flex; align-items: center; gap: 1rem; }
-  .nav-search {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.45rem 0.9rem;
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    font-family: 'Inter', sans-serif;
-    display: flex; align-items: center; gap: 0.5rem;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    white-space: nowrap;
-  }
-  .nav-search:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
-  .theme-toggle {
-    width: 38px; height: 38px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
-    transition: border-color 0.2s, background 0.2s;
-    color: var(--text-secondary);
-  }
-  .theme-toggle:hover { border-color: var(--border-hover); color: var(--text-primary); }
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="src/style.css">
 
-  /* ── HERO ── */
-  .hero {
-    padding: 140px 2rem 80px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  .hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    background: var(--accent-dim);
-    color: var(--accent-soft);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.35rem 0.9rem;
-    border-radius: 100px;
-    border: 1px solid rgba(99,102,241,0.2);
-    margin-bottom: 1.5rem;
-  }
-  .hero-eyebrow::before { content: '●'; font-size: 0.5rem; }
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 4rem;
-    align-items: start;
-  }
-  .hero-title {
-    font-family: 'Fraunces', serif;
-    font-size: clamp(2.8rem, 5vw, 4.5rem);
-    font-weight: 700;
-    line-height: 1.08;
-    letter-spacing: -0.02em;
-    color: var(--text-primary);
-    margin-bottom: 1.25rem;
-  }
-  .hero-title .ink-word {
-    color: var(--accent-soft);
-    font-style: italic;
-    display: inline-block;
-    position: relative;
-  }
-  .hero-title .ink-word::after {
-    content: '';
-    position: absolute;
-    bottom: 4px; left: 0; right: 0;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 2px;
-    transform: scaleX(0);
-    transform-origin: left;
-    animation: underline-in 0.8s cubic-bezier(0.22,1,0.36,1) 1.2s forwards;
-  }
-  @keyframes underline-in { to { transform: scaleX(1); } }
-  .hero-desc {
-    font-size: 1.05rem;
-    color: var(--text-secondary);
-    line-height: 1.8;
-    max-width: 520px;
-    margin-bottom: 2rem;
-  }
-  .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.15s;
-    letter-spacing: 0.01em;
-  }
-  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-  .btn-ghost {
-    background: transparent;
-    color: var(--text-secondary);
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    text-decoration: none;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s, transform 0.15s;
-  }
-  .btn-ghost:hover { border-color: var(--border-hover); color: var(--text-primary); transform: translateY(-1px); }
-
-  /* hero stats */
-  .hero-stats {
-    display: flex; gap: 2rem;
-    margin-top: 2.5rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
-  }
-  .stat-item { }
-  .stat-num {
-    font-family: 'Fraunces', serif;
-    font-size: 1.7rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    margin-top: 0.2rem;
-  }
-
-  /* hero featured card */
-  .hero-featured {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: border-color 0.3s, transform 0.3s;
-    cursor: pointer;
-  }
-  .hero-featured:hover { border-color: var(--border-hover); transform: translateY(-4px); }
-  .featured-img {
-    width: 100%; height: 180px;
-    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3730a3 100%);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 3rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .featured-img::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.3) 0%, transparent 70%);
-  }
-  .featured-body { padding: 1.25rem; }
-  .tag {
-    display: inline-block;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    padding: 0.25rem 0.65rem;
-    border-radius: 100px;
-    margin-bottom: 0.75rem;
-  }
-  .tag-indigo { background: var(--accent-dim); color: var(--accent-soft); }
-  .tag-teal { background: rgba(20,184,166,0.12); color: #5eead4; }
-  .tag-amber { background: rgba(245,158,11,0.12); color: #fcd34d; }
-  .tag-rose { background: rgba(244,63,94,0.12); color: #fda4af; }
-  .tag-emerald { background: rgba(16,185,129,0.12); color: #6ee7b7; }
-  [data-theme="light"] .tag-teal { background: rgba(20,184,166,0.1); color: #0d9488; }
-  [data-theme="light"] .tag-amber { background: rgba(245,158,11,0.1); color: #b45309; }
-  [data-theme="light"] .tag-rose { background: rgba(244,63,94,0.1); color: #e11d48; }
-  [data-theme="light"] .tag-emerald { background: rgba(16,185,129,0.1); color: #059669; }
-  [data-theme="light"] .tag-indigo { color: var(--accent); }
-
-  .featured-title {
-    font-family: 'Fraunces', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1.3;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-  }
-  .featured-meta {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    display: flex; align-items: center; gap: 0.5rem;
-  }
-  .featured-meta span::before { content: '·'; margin-right: 0.5rem; }
-  .featured-meta span:first-child::before { display: none; }
-
-  /* ── CATEGORIES ── */
-  .section { max-width: 1200px; margin: 0 auto; padding: 0 2rem 80px; }
-  .section-header {
-    display: flex; align-items: baseline; justify-content: space-between;
-    margin-bottom: 1.75rem;
-  }
-  .section-title {
-    font-family: 'Fraunces', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: -0.02em;
-  }
-  .section-link {
-    font-size: 0.82rem;
-    color: var(--accent-soft);
-    text-decoration: none;
-    font-weight: 500;
-    display: flex; align-items: center; gap: 0.3rem;
-    transition: gap 0.2s;
-  }
-  .section-link:hover { gap: 0.5rem; }
-
-  .categories-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-  }
-  .cat-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.25rem;
-    cursor: pointer;
-    text-decoration: none;
-    transition: border-color 0.2s, background 0.2s, transform 0.2s;
-    display: block;
-  }
-  .cat-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); transform: translateY(-2px); }
-  .cat-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.75rem;
-    display: block;
-  }
-  .cat-name {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-    margin-bottom: 0.25rem;
-  }
-  .cat-count { font-size: 0.75rem; color: var(--text-muted); }
-
-  /* ── ARTICLES GRID ── */
-  .articles-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
-  .article-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: border-color 0.25s, transform 0.25s;
-    text-decoration: none;
-    display: flex; flex-direction: column;
-  }
-  .article-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
-  .article-card.large {
-    grid-column: span 2;
-    flex-direction: row;
-  }
-  .card-img {
-    height: 160px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2.2rem;
-    flex-shrink: 0;
-  }
-  .article-card.large .card-img { width: 220px; height: auto; }
-  .card-img-math { background: linear-gradient(135deg, #0c1445 0%, #1e3a8a 100%); }
-  .card-img-sci { background: linear-gradient(135deg, #042f2e 0%, #134e4a 100%); }
-  .card-img-lang { background: linear-gradient(135deg, #2d1b4e 0%, #4c1d95 100%); }
-  .card-img-hist { background: linear-gradient(135deg, #431407 0%, #7c2d12 100%); }
-  .card-img-phil { background: linear-gradient(135deg, #0f2017 0%, #14532d 100%); }
-  .card-img-tech { background: linear-gradient(135deg, #0c1445 0%, #1e1b4b 100%); }
-  [data-theme="light"] .card-img-math { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
-  [data-theme="light"] .card-img-sci { background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%); }
-  [data-theme="light"] .card-img-lang { background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); }
-  [data-theme="light"] .card-img-hist { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); }
-  [data-theme="light"] .card-img-phil { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); }
-  [data-theme="light"] .card-img-tech { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); }
-  .card-body { padding: 1.1rem 1.25rem 1.25rem; display: flex; flex-direction: column; flex: 1; }
-  .card-title {
-    font-family: 'Fraunces', serif;
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.35;
-    color: var(--text-primary);
-    margin: 0.5rem 0 0.5rem;
-  }
-  .article-card.large .card-title { font-size: 1.2rem; }
-  .card-excerpt {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    line-height: 1.65;
-    flex: 1;
-    margin-bottom: 0.9rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .card-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    border-top: 1px solid var(--border);
-    padding-top: 0.75rem;
-    margin-top: auto;
-  }
-  .card-meta { font-size: 0.72rem; color: var(--text-muted); }
-  .card-read {
-    font-size: 0.72rem;
-    color: var(--accent-soft);
-    font-weight: 600;
-    display: flex; align-items: center; gap: 0.2rem;
-  }
-
-  /* ── NEWSLETTER ── */
-  .newsletter {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    max-width: 680px;
-    margin: 0 auto;
-  }
-  .newsletter::before {
-    content: '';
-    position: absolute;
-    top: -60px; left: 50%; transform: translateX(-50%);
-    width: 300px; height: 300px;
-    background: radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .newsletter-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-  .newsletter-title {
-    font-family: 'Fraunces', serif;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.02em;
-  }
-  .newsletter-desc { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; }
-  .newsletter-form { display: flex; gap: 0.75rem; max-width: 400px; margin: 0 auto; }
-  .newsletter-input {
-    flex: 1;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.88rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .newsletter-input::placeholder { color: var(--text-muted); }
-  .newsletter-input:focus { border-color: var(--accent); }
-
-  /* ── TRENDING ── */
-  .trending-list { display: flex; flex-direction: column; gap: 0; }
-  .trending-item {
-    display: flex; align-items: flex-start; gap: 1.25rem;
-    padding: 1.1rem 0;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    text-decoration: none;
-    transition: padding-left 0.2s;
-  }
-  .trending-item:last-child { border-bottom: none; }
-  .trending-item:hover { padding-left: 0.35rem; }
-  .trending-num {
-    font-family: 'Fraunces', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--border);
-    line-height: 1;
-    min-width: 2rem;
-    text-align: center;
-    padding-top: 2px;
-  }
-  .trending-item:hover .trending-num { color: var(--accent-dim); }
-  .trending-content { flex: 1; }
-  .trending-title {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    line-height: 1.4;
-    margin-bottom: 0.25rem;
-  }
-  .trending-meta { font-size: 0.72rem; color: var(--text-muted); }
-
-  /* ── LAYOUT SPLIT ── */
-  .split-grid {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 3rem;
-    align-items: start;
-  }
-  .sidebar-block {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.25rem;
-    margin-bottom: 1.25rem;
-  }
-  .sidebar-title {
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-  }
-  .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .topic-tag {
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    font-size: 0.78rem;
-    padding: 0.3rem 0.75rem;
-    border-radius: 100px;
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-    text-decoration: none;
-  }
-  .topic-tag:hover { border-color: var(--accent); color: var(--accent-soft); }
-
-  /* Author card */
-  .author-mini {
-    display: flex; align-items: center; gap: 0.85rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    text-decoration: none;
-    transition: padding-left 0.2s;
-  }
-  .author-mini:last-child { border-bottom: none; }
-  .author-mini:hover { padding-left: 0.25rem; }
-  .author-avatar {
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem;
-    font-weight: 700;
-    font-family: 'Fraunces', serif;
-    flex-shrink: 0;
-  }
-  .av-indigo { background: var(--accent-dim); color: var(--accent-soft); }
-  .av-teal { background: rgba(20,184,166,0.12); color: #5eead4; }
-  .av-amber { background: rgba(245,158,11,0.12); color: #fcd34d; }
-  [data-theme="light"] .av-teal { color: #0d9488; }
-  [data-theme="light"] .av-amber { color: #b45309; }
-  .author-info { flex: 1; }
-  .author-name { font-size: 0.84rem; font-weight: 600; color: var(--text-primary); }
-  .author-count { font-size: 0.72rem; color: var(--text-muted); }
-
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 3rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  .footer-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 3rem;
-    margin-bottom: 3rem;
-  }
-  .footer-brand .nav-logo { display: inline-block; margin-bottom: 0.75rem; }
-  .footer-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.7; }
-  .footer-col-title {
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-  }
-  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
-  .footer-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: color 0.2s;
-  }
-  .footer-links a:hover { color: var(--accent-soft); }
-  .footer-bottom {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
-    font-size: 0.78rem;
-    color: var(--text-muted);
-  }
-
-  /* ── SEARCH OVERLAY ── */
-  .search-overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(8px);
-    display: flex; align-items: flex-start; justify-content: center;
-    padding-top: 15vh;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s;
-  }
-  .search-overlay.open { opacity: 1; pointer-events: all; }
-  .search-box {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    width: 100%; max-width: 580px;
-    overflow: hidden;
-    transform: translateY(-10px);
-    transition: transform 0.2s;
-  }
-  .search-overlay.open .search-box { transform: translateY(0); }
-  .search-inner {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .search-inner svg { color: var(--text-muted); flex-shrink: 0; }
-  .search-input-real {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    color: var(--text-primary);
-  }
-  .search-input-real::placeholder { color: var(--text-muted); }
-  .search-hints { padding: 1rem 1.25rem; }
-  .search-hint-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
-  .search-hint-item {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.5rem 0;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    cursor: pointer;
-    border-radius: 6px;
-    padding: 0.5rem 0.75rem;
-    margin: 0 -0.75rem;
-    transition: background 0.15s, color 0.15s;
-  }
-  .search-hint-item:hover { background: var(--bg-card-hover); color: var(--text-primary); }
-  .search-hint-icon { font-size: 0.9rem; }
-
-  /* ── PROGRESS BAR ── */
-  .read-progress {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 101;
-    height: 3px;
-    background: transparent;
-  }
-  .read-progress-bar {
-    height: 100%;
-    background: var(--accent);
-    width: 0;
-    transition: width 0.1s linear;
-    border-radius: 0 2px 2px 0;
-  }
-
-  /* ── REVEAL ANIMATION ── */
-  .reveal {
-    opacity: 0; transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-  .reveal.visible { opacity: 1; transform: none; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    .hero-grid { grid-template-columns: 1fr; }
-    .hero-featured { display: none; }
-    .categories-grid { grid-template-columns: repeat(2, 1fr); }
-    .articles-grid { grid-template-columns: 1fr; }
-    .article-card.large { flex-direction: column; }
-    .article-card.large .card-img { width: 100%; height: 160px; }
-    .split-grid { grid-template-columns: 1fr; }
-    .footer-grid { grid-template-columns: 1fr 1fr; }
-    .nav-links { display: none; }
-  }
-  @media (max-width: 600px) {
-    .footer-grid { grid-template-columns: 1fr; }
-    .hero { padding-top: 100px; }
-    .newsletter { padding: 2rem 1.5rem; }
-    .newsletter-form { flex-direction: column; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    *, .reveal { transition: none !important; animation: none !important; }
-  }
-</style>
+  <!-- Preconnect for Google Fonts (already in CSS @import, this just speeds it up) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
 
-<div class="read-progress"><div class="read-progress-bar" id="progressBar"></div></div>
+  <!-- ═══════════════════════════════════════════
+       HEADER
+       ═══════════════════════════════════════════ -->
+  <header id="site-header">
+    <div class="container header-inner">
 
-<!-- NAV -->
-<nav>
-  <a href="#" class="nav-logo">Ink<span>ara</span></a>
-  <ul class="nav-links">
-    <li><a href="#">Beranda</a></li>
-    <li><a href="#">Materi</a></li>
-    <li><a href="#">Kategori</a></li>
-    <li><a href="#">Tentang</a></li>
-  </ul>
-  <div class="nav-right">
-    <button class="nav-search" onclick="openSearch()">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      Cari materi...
-      <span style="opacity:0.4; font-size:0.7rem; margin-left:4px;">⌘K</span>
-    </button>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle tema">
-      <svg id="icon-sun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      <svg id="icon-moon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
-  </div>
-</nav>
+      <!-- Logo -->
+      <a href="." class="logo" aria-label="Nirawarana — Beranda">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M4 4v20M4 4l20 20M24 4v20"
+            stroke="currentColor" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">Nirawarana</span>
+      </a>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-eyebrow">Belajar lebih dalam, berpikir lebih jernih</div>
-  <div class="hero-grid">
-    <div>
-      <h1 class="hero-title">
-        Temukan <span class="ink-word">pengetahuan</span><br>
-        yang mengubah cara<br>kamu berpikir.
-      </h1>
-      <p class="hero-desc">
-        Inkara adalah ruang baca untuk kamu yang ingin belajar serius — dari matematika dan sains hingga filsafat dan linguistik. Ditulis dengan cermat, dijelaskan dengan jelas.
+      <!-- Navigation -->
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <a href="."              class="active">Beranda</a>
+        <a href="articles/">Semua Artikel</a>
+        <a href="articles/?category=rendering">Rendering</a>
+        <a href="articles/?category=gameengine">Game Engine</a>
+        <a href="articles/?category=architecture">Architecture</a>
+      </nav>
+
+      <!-- Theme toggle -->
+      <button id="theme-toggle" aria-label="Toggle dark mode">
+        <!-- icon injected by app.js -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <!-- Mobile menu button -->
+      <button id="mobile-menu-btn" aria-label="Buka menu" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       HERO
+       ═══════════════════════════════════════════ -->
+  <section id="hero" aria-label="Hero section">
+    <div class="container hero-inner">
+      <p class="hero-eyebrow">// Engineering Knowledge Base</p>
+      <h1 class="hero-title">Nirawarana</h1>
+      <p class="hero-sub">Rendering &nbsp;·&nbsp; Game Engine &nbsp;·&nbsp; Architecture &nbsp;·&nbsp; Engineering &nbsp;·&nbsp; Graphics</p>
+
+      <!-- Search -->
+      <div class="search-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="Cari artikel, topik, atau tag…"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Cari artikel"
+        >
+        <button id="clear-search" aria-label="Hapus pencarian" style="display:none">×</button>
+        <div id="search-suggestions" hidden aria-label="Saran pencarian" role="listbox"></div>
+      </div>
+      <p class="search-hint">
+        <span class="kbd">/</span> atau <span class="kbd">Ctrl K</span> untuk fokus pencarian
       </p>
-      <div class="hero-actions">
-        <a href="#" class="btn-primary">Mulai Membaca</a>
-        <a href="#" class="btn-ghost">Lihat Semua Materi →</a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CATEGORY FILTER BAR
+       ═══════════════════════════════════════════ -->
+  <div class="category-bar">
+    <div class="container">
+      <div id="category-pills" role="group" aria-label="Filter kategori">
+        <!-- Injected by app.js -->
       </div>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <div class="stat-num">240+</div>
-          <div class="stat-label">Artikel materi</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CONTENT
+       ═══════════════════════════════════════════ -->
+  <div class="container">
+    <div class="layout-content">
+
+      <!-- Article list -->
+      <main id="article-list" aria-label="Daftar artikel">
+        <p class="result-info" id="result-info" aria-live="polite"></p>
+        <div id="articles-grid" role="list">
+          <!-- Cards injected by app.js -->
         </div>
-        <div class="stat-item">
-          <div class="stat-num">18</div>
-          <div class="stat-label">Kategori ilmu</div>
+        <nav id="pagination" aria-label="Navigasi halaman"></nav>
+      </main>
+
+      <!-- Sidebar -->
+      <aside id="sidebar" aria-label="Sidebar">
+
+        <div class="sidebar-widget">
+          <h3 class="sidebar-title">Artikel Terbaru</h3>
+          <ul id="recent-list" aria-label="Artikel terbaru">
+            <!-- Injected by app.js -->
+          </ul>
         </div>
-        <div class="stat-item">
-          <div class="stat-num">12rb</div>
-          <div class="stat-label">Pembaca aktif</div>
+
+        <div class="sidebar-widget">
+          <h3 class="sidebar-title">Kategori</h3>
+          <ul id="sidebar-cat-list" aria-label="Daftar kategori">
+            <!-- Injected by app.js -->
+          </ul>
         </div>
-      </div>
-    </div>
-    <div class="hero-featured reveal">
-      <div class="featured-img">📐</div>
-      <div class="featured-body">
-        <span class="tag tag-indigo">Matematika</span>
-        <div class="featured-title">Mengapa Bilangan Prima Membuat Matematikawan Tidak Bisa Tidur</div>
-        <div class="featured-meta">
-          <span>Afif Haidar</span>
-          <span>12 menit baca</span>
-          <span>Kemarin</span>
+
+        <div class="sidebar-widget">
+          <h3 class="sidebar-title">Tag Populer</h3>
+          <div id="tag-cloud" class="tag-cloud" aria-label="Tag populer">
+            <!-- Injected by app.js -->
+          </div>
         </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════ -->
+  <footer id="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M4 4v20M4 4l20 20M24 4v20"
+            stroke="currentColor" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Nirawarana</span>
       </div>
+      <p class="footer-meta">
+        &copy; <span id="footer-year"></span> Nirawarana · Ditulis oleh Admin
+      </p>
+      <nav class="footer-links" aria-label="Footer links">
+        <a href="articles/">Semua Artikel</a>
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      </nav>
     </div>
-  </div>
-</section>
+  </footer>
 
-<!-- CATEGORIES -->
-<section class="section">
-  <div class="section-header reveal">
-    <h2 class="section-title">Jelajahi Kategori</h2>
-    <a href="#" class="section-link">Lihat semua →</a>
-  </div>
-  <div class="categories-grid">
-    <a href="#" class="cat-card reveal">
-      <span class="cat-icon">📐</span>
-      <div class="cat-name">Matematika</div>
-      <div class="cat-count">48 artikel</div>
-    </a>
-    <a href="#" class="cat-card reveal" style="transition-delay:0.05s">
-      <span class="cat-icon">🔬</span>
-      <div class="cat-name">Sains & Fisika</div>
-      <div class="cat-count">61 artikel</div>
-    </a>
-    <a href="#" class="cat-card reveal" style="transition-delay:0.1s">
-      <span class="cat-icon">💬</span>
-      <div class="cat-name">Bahasa & Linguistik</div>
-      <div class="cat-count">34 artikel</div>
-    </a>
-    <a href="#" class="cat-card reveal" style="transition-delay:0.15s">
-      <span class="cat-icon">🏛️</span>
-      <div class="cat-name">Sejarah & Budaya</div>
-      <div class="cat-count">42 artikel</div>
-    </a>
-    <a href="#" class="cat-card reveal" style="transition-delay:0.2s">
-      <span class="cat-icon">🧠</span>
-      <div class="cat-name">Filsafat</div>
-      <div class="cat-count">27 artikel</div>
-    </a>
-    <a href="#" class="cat-card reveal" style="transition-delay:0.25s">
-      <span class="cat-icon">💻</span>
-      <div class="cat-name">Teknologi & CS</div>
-      <div class="cat-count">55 artikel</div>
-    </a>
-    <a href="#" class="cat-card reveal" style="transition-delay:0.3s">
-      <span class="cat-icon">🌍</span>
-      <div class="cat-name">Geografi</div>
-      <div class="cat-count">19 artikel</div>
-    </a>
-    <a href="#" class="cat-card reveal" style="transition-delay:0.35s">
-      <span class="cat-icon">🧬</span>
-      <div class="cat-name">Biologi</div>
-      <div class="cat-count">38 artikel</div>
-    </a>
-  </div>
-</section>
+  <!-- Scroll to top -->
+  <button id="scroll-top" aria-label="Kembali ke atas"></button>
 
-<!-- ARTICLES + SIDEBAR -->
-<section class="section">
-  <div class="split-grid">
-    <div>
-      <div class="section-header reveal">
-        <h2 class="section-title">Artikel Terbaru</h2>
-        <a href="#" class="section-link">Semua artikel →</a>
-      </div>
-      <div class="articles-grid">
+  <!-- ═══════════════════════════════════════════
+       SCRIPTS
+       ═══════════════════════════════════════════ -->
+  <script src="src/data.js"></script>
+  <script src="src/search.js"></script>
+  <script src="src/app.js"></script>
+  <script>
+    // Footer year
+    document.getElementById("footer-year").textContent = new Date().getFullYear();
+  </script>
 
-        <!-- Large card -->
-        <a href="#" class="article-card large reveal">
-          <div class="card-img card-img-sci" style="width:220px; height:auto; display:flex; align-items:center; justify-content:center; font-size:3rem;">⚛️</div>
-          <div class="card-body">
-            <span class="tag tag-teal">Fisika</span>
-            <div class="card-title">Dualitas Gelombang-Partikel: Mengapa Cahaya Menolak untuk Didefinisikan</div>
-            <div class="card-excerpt">Eksperimen celah ganda Young membuktikan sesuatu yang membingungkan: cahaya berperilaku sebagai gelombang ketika tidak diamati, dan sebagai partikel saat diukur. Fenomena ini bukan sekadar quirk fisika kuantum.</div>
-            <div class="card-footer">
-              <span class="card-meta">Rizqi Ananta · 15 min</span>
-              <span class="card-read">Baca →</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#" class="article-card reveal" style="transition-delay:0.05s">
-          <div class="card-img card-img-lang">💬</div>
-          <div class="card-body">
-            <span class="tag tag-rose">Linguistik</span>
-            <div class="card-title">Hipotesis Sapir-Whorf: Apakah Bahasa Membentuk Cara Kita Berpikir?</div>
-            <div class="card-excerpt">Bahasa yang berbeda tidak hanya memberi nama berbeda pada hal yang sama — mereka bisa membentuk persepsi realitas secara fundamental.</div>
-            <div class="card-footer">
-              <span class="card-meta">Sari Wulandari · 9 min</span>
-              <span class="card-read">Baca →</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#" class="article-card reveal" style="transition-delay:0.1s">
-          <div class="card-img card-img-math">∞</div>
-          <div class="card-body">
-            <span class="tag tag-indigo">Matematika</span>
-            <div class="card-title">Teorema Ketidaklengkapan Gödel dan Batas Pengetahuan Manusia</div>
-            <div class="card-excerpt">Ada pernyataan matematis yang benar, tapi tidak bisa dibuktikan. Gödel membuktikannya — dan mengubah fondasi matematika selamanya.</div>
-            <div class="card-footer">
-              <span class="card-meta">Afif Haidar · 18 min</span>
-              <span class="card-read">Baca →</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#" class="article-card reveal" style="transition-delay:0.15s">
-          <div class="card-img card-img-phil">🤔</div>
-          <div class="card-body">
-            <span class="tag tag-emerald">Filsafat</span>
-            <div class="card-title">Masalah Kesadaran Hard Problem: Mengapa Otak Bisa Merasa?</div>
-            <div class="card-excerpt">David Chalmers merumuskan pertanyaan yang belum terjawab oleh sains: kenapa ada "pengalaman subjektif" sama sekali?</div>
-            <div class="card-footer">
-              <span class="card-meta">Hana Pratiwi · 12 min</span>
-              <span class="card-read">Baca →</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#" class="article-card reveal" style="transition-delay:0.2s">
-          <div class="card-img card-img-hist">🏺</div>
-          <div class="card-body">
-            <span class="tag tag-rose">Sejarah</span>
-            <div class="card-title">Jalan Sutra dan Transfer Pengetahuan Antar Peradaban</div>
-            <div class="card-excerpt">Lebih dari sekadar rute dagang, Jalan Sutra adalah jaringan pertukaran ide, teknologi, dan ilmu pengetahuan terbesar sepanjang masa.</div>
-            <div class="card-footer">
-              <span class="card-meta">Bima Nugraha · 11 min</span>
-              <span class="card-read">Baca →</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#" class="article-card reveal" style="transition-delay:0.25s">
-          <div class="card-img card-img-tech">🤖</div>
-          <div class="card-body">
-            <span class="tag tag-indigo">Teknologi</span>
-            <div class="card-title">Bagaimana Neural Network Belajar: Dari Perceptron ke Deep Learning</div>
-            <div class="card-excerpt">Dari ide sederhana McCulloch dan Pitts pada 1943, hingga GPT modern — perjalanan mesin yang belajar dari kesalahan.</div>
-            <div class="card-footer">
-              <span class="card-meta">Rizqi Ananta · 14 min</span>
-              <span class="card-read">Baca →</span>
-            </div>
-          </div>
-        </a>
-
-      </div>
-    </div>
-
-    <!-- SIDEBAR -->
-    <aside>
-      <div class="sidebar-block reveal">
-        <div class="sidebar-title">🔥 Sedang Populer</div>
-        <div class="trending-list">
-          <a href="#" class="trending-item">
-            <div class="trending-num">01</div>
-            <div class="trending-content">
-              <div class="trending-title">Mengapa Kita Lupa? Ilmu di Balik Memori dan Kurva Forgetting</div>
-              <div class="trending-meta">8.2rb pembaca</div>
-            </div>
-          </a>
-          <a href="#" class="trending-item">
-            <div class="trending-num">02</div>
-            <div class="trending-content">
-              <div class="trending-title">Paradoks Zeno: Achilles dan Kura-kura yang Tidak Pernah Terkejar</div>
-              <div class="trending-meta">6.7rb pembaca</div>
-            </div>
-          </a>
-          <a href="#" class="trending-item">
-            <div class="trending-num">03</div>
-            <div class="trending-content">
-              <div class="trending-title">Entropi dan Panah Waktu: Mengapa Waktu Hanya Bergerak Maju?</div>
-              <div class="trending-meta">5.9rb pembaca</div>
-            </div>
-          </a>
-          <a href="#" class="trending-item">
-            <div class="trending-num">04</div>
-            <div class="trending-content">
-              <div class="trending-title">Psikologi Gestalt dan Cara Otak Melihat Pola</div>
-              <div class="trending-meta">4.4rb pembaca</div>
-            </div>
-          </a>
-          <a href="#" class="trending-item">
-            <div class="trending-num">05</div>
-            <div class="trending-content">
-              <div class="trending-title">Efek Baader-Meinhof: Kenapa Kamu Tiba-tiba "Melihatnya Di Mana-mana"</div>
-              <div class="trending-meta">3.8rb pembaca</div>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <div class="sidebar-block reveal">
-        <div class="sidebar-title">✍️ Penulis Pilihan</div>
-        <a href="#" class="author-mini">
-          <div class="author-avatar av-indigo">A</div>
-          <div class="author-info">
-            <div class="author-name">Afif Haidar</div>
-            <div class="author-count">24 artikel · Matematika, Fisika</div>
-          </div>
-        </a>
-        <a href="#" class="author-mini">
-          <div class="author-avatar av-teal">R</div>
-          <div class="author-info">
-            <div class="author-name">Rizqi Ananta</div>
-            <div class="author-count">18 artikel · Sains, Teknologi</div>
-          </div>
-        </a>
-        <a href="#" class="author-mini">
-          <div class="author-avatar av-amber">S</div>
-          <div class="author-info">
-            <div class="author-name">Sari Wulandari</div>
-            <div class="author-count">15 artikel · Bahasa, Filsafat</div>
-          </div>
-        </a>
-      </div>
-
-      <div class="sidebar-block reveal">
-        <div class="sidebar-title">🏷️ Topik</div>
-        <div class="tag-cloud">
-          <a href="#" class="topic-tag">Matematika</a>
-          <a href="#" class="topic-tag">Fisika Kuantum</a>
-          <a href="#" class="topic-tag">Filsafat</a>
-          <a href="#" class="topic-tag">Linguistik</a>
-          <a href="#" class="topic-tag">Evolusi</a>
-          <a href="#" class="topic-tag">AI & Machine Learning</a>
-          <a href="#" class="topic-tag">Sejarah Sains</a>
-          <a href="#" class="topic-tag">Psikologi</a>
-          <a href="#" class="topic-tag">Kosmologi</a>
-          <a href="#" class="topic-tag">Biologi</a>
-        </div>
-      </div>
-    </aside>
-  </div>
-</section>
-
-<!-- NEWSLETTER -->
-<section class="section">
-  <div class="newsletter reveal">
-    <div class="newsletter-icon">📬</div>
-    <h2 class="newsletter-title">Jangan lewatkan satu pun</h2>
-    <p class="newsletter-desc">Artikel terpilih langsung ke email kamu, setiap Senin dan Kamis. Tanpa spam, bisa berhenti kapan saja.</p>
-    <div class="newsletter-form">
-      <input type="email" class="newsletter-input" placeholder="emailkamu@contoh.com">
-      <button class="btn-primary">Langganan</button>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <a href="#" class="nav-logo">Ink<span>ara</span></a>
-      <p class="footer-desc">Ruang baca untuk pikiran yang selalu ingin tahu. Kami percaya pengetahuan seharusnya mudah diakses, tidak mudah dilupakan.</p>
-    </div>
-    <div>
-      <div class="footer-col-title">Kategori</div>
-      <ul class="footer-links">
-        <li><a href="#">Matematika</a></li>
-        <li><a href="#">Sains & Fisika</a></li>
-        <li><a href="#">Filsafat</a></li>
-        <li><a href="#">Linguistik</a></li>
-        <li><a href="#">Sejarah</a></li>
-      </ul>
-    </div>
-    <div>
-      <div class="footer-col-title">Blog</div>
-      <ul class="footer-links">
-        <li><a href="#">Terbaru</a></li>
-        <li><a href="#">Terpopuler</a></li>
-        <li><a href="#">Pilihan Editor</a></li>
-        <li><a href="#">Seri Materi</a></li>
-        <li><a href="#">Penulis</a></li>
-      </ul>
-    </div>
-    <div>
-      <div class="footer-col-title">Lainnya</div>
-      <ul class="footer-links">
-        <li><a href="#">Tentang Kami</a></li>
-        <li><a href="#">Bergabung Menulis</a></li>
-        <li><a href="#">Kebijakan Privasi</a></li>
-        <li><a href="#">Kontak</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2025 Inkara. Dibuat dengan ❤️ untuk para pencari ilmu.</span>
-    <span>Belajar itu hak semua orang.</span>
-  </div>
-</footer>
-
-<!-- SEARCH OVERLAY -->
-<div class="search-overlay" id="searchOverlay" onclick="closeSearchIfOutside(event)">
-  <div class="search-box">
-    <div class="search-inner">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" class="search-input-real" placeholder="Cari materi, topik, atau penulis..." id="searchInput" autofocus>
-      <button onclick="closeSearch()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;padding:0.2rem;">✕</button>
-    </div>
-    <div class="search-hints">
-      <div class="search-hint-label">Pencarian populer</div>
-      <div class="search-hint-item"><span class="search-hint-icon">📐</span> Teorema Pythagoras dan pembuktiannya</div>
-      <div class="search-hint-item"><span class="search-hint-icon">🧠</span> Bagaimana otak menyimpan memori</div>
-      <div class="search-hint-item"><span class="search-hint-icon">🔬</span> Relativitas khusus Einstein</div>
-      <div class="search-hint-item"><span class="search-hint-icon">💬</span> Asal usul bahasa Indonesia</div>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Theme toggle
-  function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('icon-sun').style.display = isDark ? 'block' : 'none';
-    document.getElementById('icon-moon').style.display = isDark ? 'none' : 'block';
-    localStorage.setItem('inkara-theme', isDark ? 'light' : 'dark');
-  }
-
-  // Restore theme
-  (function() {
-    const saved = localStorage.getItem('inkara-theme');
-    if (saved === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-      document.getElementById('icon-sun').style.display = 'block';
-      document.getElementById('icon-moon').style.display = 'none';
-    }
-  })();
-
-  // Search
-  function openSearch() {
-    document.getElementById('searchOverlay').classList.add('open');
-    setTimeout(() => document.getElementById('searchInput').focus(), 100);
-  }
-  function closeSearch() {
-    document.getElementById('searchOverlay').classList.remove('open');
-  }
-  function closeSearchIfOutside(e) {
-    if (e.target === document.getElementById('searchOverlay')) closeSearch();
-  }
-
-  // Keyboard shortcut
-  document.addEventListener('keydown', e => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-    if (e.key === 'Escape') closeSearch();
-  });
-
-  // Read progress bar
-  window.addEventListener('scroll', () => {
-    const el = document.documentElement;
-    const scrolled = (el.scrollTop || document.body.scrollTop) /
-      ((el.scrollHeight || document.body.scrollHeight) - el.clientHeight) * 100;
-    document.getElementById('progressBar').style.width = Math.min(scrolled, 100) + '%';
-  });
-
-  // Reveal on scroll
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-</script>
 </body>
 </html>

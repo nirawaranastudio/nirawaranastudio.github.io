@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  NIRAWARANA — ARTICLE TEMPLATE                              ║
+  ║                                                              ║
+  ║  CARA PAKAI:                                                 ║
+  ║  1. Copy file ini ke folder kategori yang sesuai            ║
+  ║  2. Rename sesuai slug artikel                              ║
+  ║  3. Isi semua <meta name="article:*"> di bawah             ║
+  ║  4. Sesuaikan PATH PREFIX berdasarkan kedalaman folder:     ║
+  ║                                                              ║
+  ║  Depth  │ Contoh path               │ Prefix                ║
+  ║  ───────┼───────────────────────────┼──────────────────     ║
+  ║  2      │ articles/gameengine/      │ ../../                ║
+  ║  3      │ articles/rendering/vulkan/│ ../../../             ║
+  ║  4      │ articles/rendering/       │ ../../../../          ║
+  ║         │   directx/technique/      │                       ║
+  ║                                                              ║
+  ║  5. Ganti semua [PREFIX] di bawah dengan prefix yang sesuai ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ═══════════════════════════════════════════════════
+       METADATA ARTIKEL — WAJIB DIISI
+       ═══════════════════════════════════════════════════ -->
+  <meta name="article:slug"        content="GANTI-SLUG-ARTIKEL">
+  <meta name="article:category"    content="GANTI-KATEGORI">
+  <!-- kategori: rendering | gameengine | architecture | engineering | graphics -->
+  <meta name="article:subcategory" content="GANTI-SUBKATEGORI-ATAU-KOSONG">
+  <meta name="article:tags"        content="tag1, tag2, tag3">
+  <meta name="article:date"        content="YYYY-MM-DD">
+  <meta name="article:readtime"    content="XX"><!-- angka menit, tanpa "menit" -->
+  <meta name="article:author"      content="Admin">
+
+  <!-- SEO -->
+  <meta name="description" content="GANTI DESKRIPSI SINGKAT ARTIKEL (max 160 karakter)">
+  <meta name="author"      content="Admin">
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="article">
+  <meta property="og:title"       content="JUDUL ARTIKEL · Nirawarana">
+  <meta property="og:description" content="GANTI DESKRIPSI">
+  <meta property="og:image"       content="[PREFIX]src/images/covers/SLUG-cover.png">
+
+  <title>JUDUL ARTIKEL · Nirawarana</title>
+
+  <link rel="icon" type="image/svg+xml" href="[PREFIX]src/images/logo.svg">
+
+  <!-- Stylesheets (order matters) -->
+  <link rel="stylesheet" href="[PREFIX]src/style.css">
+  <link rel="stylesheet" href="../src/article.css">
+  <!-- Prism syntax highlighting theme -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+
+  <!-- READING PROGRESS BAR -->
+  <div id="reading-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+
+  <!-- ═══════════════════════════════════════════════════
+       HEADER
+       ═══════════════════════════════════════════════════ -->
+  <header id="site-header">
+    <div class="container header-inner">
+      <a href="[PREFIX]" class="logo">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M4 4v20M4 4l20 20M24 4v20"
+            stroke="currentColor" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">Nirawarana</span>
+      </a>
+      <nav class="main-nav">
+        <a href="[PREFIX]">Beranda</a>
+        <a href="[PREFIX]articles/">Semua Artikel</a>
+        <a href="[PREFIX]articles/?category=rendering">Rendering</a>
+        <a href="[PREFIX]articles/?category=gameengine">Game Engine</a>
+        <a href="[PREFIX]articles/?category=architecture">Architecture</a>
+      </nav>
+      <button id="theme-toggle" aria-label="Toggle dark mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════
+       ARTICLE HERO
+       ═══════════════════════════════════════════════════ -->
+  <div class="article-hero">
+
+    <!-- Cover Image (title image) — hapus jika tidak ada -->
+    <img
+      class="article-hero-cover"
+      src="[PREFIX]src/images/covers/SLUG-cover.png"
+      alt="Cover: JUDUL ARTIKEL"
+      loading="eager"
+      onerror="this.style.display='none'"
+    >
+
+    <div class="container article-hero-meta">
+
+      <!-- Breadcrumb -->
+      <nav class="article-breadcrumb" aria-label="Breadcrumb">
+        <a href="[PREFIX]">Beranda</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="[PREFIX]articles/">Artikel</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="[PREFIX]articles/?category=KATEGORI">NAMA KATEGORI</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">JUDUL SINGKAT</span>
+      </nav>
+
+      <!-- Category badge -->
+      <span class="article-category-badge" style="background: var(--cat-rendering, #e05a47)22; color: var(--cat-rendering, #e05a47); border: 1.5px solid var(--cat-rendering, #e05a47)44;">
+        <span>●</span> NAMA KATEGORI
+      </span>
+
+      <!-- Title -->
+      <h1 class="article-title">JUDUL ARTIKEL</h1>
+
+      <!-- Byline -->
+      <div class="article-byline">
+        <span>Oleh Admin</span>
+        <span class="dot-sep">·</span>
+        <time datetime="YYYY-MM-DD">DD Bulan YYYY</time>
+        <span class="dot-sep">·</span>
+        <span>⏱ XX menit baca</span>
+      </div>
+
+      <!-- Tags -->
+      <div class="article-tags" aria-label="Tags">
+        <span class="article-tag">#tag1</span>
+        <span class="article-tag">#tag2</span>
+        <span class="article-tag">#tag3</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       ARTICLE BODY (TOC + PROSE)
+       ═══════════════════════════════════════════════════ -->
+  <div class="container">
+    <div class="article-layout">
+
+      <!-- Table of Contents (auto-built by article.js) -->
+      <nav id="toc" aria-label="Daftar isi"></nav>
+
+      <!-- Prose content -->
+      <article class="prose" id="article-content">
+
+        <!--
+        ┌──────────────────────────────────────────────────────┐
+        │  KOMPONEN KONTEN YANG TERSEDIA                       │
+        │  Gunakan dan hapus yang tidak perlu                  │
+        └──────────────────────────────────────────────────────┘
+        -->
+
+        <!-- ── 1. PARAGRAF PEMBUKA ── -->
+        <p>
+          Tulis paragraf pembuka di sini. Jelaskan apa yang akan dipelajari pembaca
+          dan mengapa topik ini penting. Paragraf ini adalah yang pertama dilihat
+          setelah judul.
+        </p>
+
+        <!-- ── 2. CALLOUT (INFO / WARNING / TIP / DANGER) ── -->
+        <div class="callout callout-info">
+          <span class="callout-icon">💡</span>
+          <div><strong>Info:</strong> Gunakan callout untuk menyoroti informasi penting, prasyarat, atau catatan yang perlu diperhatikan sebelum melanjutkan.</div>
+        </div>
+
+        <div class="callout callout-warning">
+          <span class="callout-icon">⚠️</span>
+          <div><strong>Perhatian:</strong> Tulis peringatan di sini — misalnya API yang deprecated, atau langkah yang harus dilakukan dengan hati-hati.</div>
+        </div>
+
+        <div class="callout callout-tip">
+          <span class="callout-icon">🎯</span>
+          <div><strong>Tip:</strong> Saran praktis yang bisa langsung diterapkan oleh pembaca.</div>
+        </div>
+
+        <!-- ── 3. HEADING SECTION ── -->
+        <h2>Nama Section Pertama</h2>
+
+        <p>
+          Konten section pertama. Heading H2 secara otomatis akan muncul di Table of Contents.
+          Gunakan H2 untuk section utama dan H3 untuk subsection.
+        </p>
+
+        <h3>Subsection</h3>
+
+        <p>Konten subsection. H3 juga muncul di TOC, sedikit menjorok ke dalam.</p>
+
+        <!-- ── 4. CODE BLOCK ── -->
+        <!-- Ganti class language-* sesuai bahasa: cpp, c, hlsl, glsl, python, javascript, bash, json, xml, yaml -->
+        <pre><code class="language-cpp">
+// Contoh kode C++ — DirectX 12 Command Queue
+#include &lt;d3d12.h&gt;
+#include &lt;wrl/client.h&gt;
+using Microsoft::WRL::ComPtr;
+
+ComPtr&lt;ID3D12CommandQueue&gt; CreateCommandQueue(ID3D12Device* device)
+{
+    D3D12_COMMAND_QUEUE_DESC desc = {};
+    desc.Type     = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    desc.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    desc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
+    desc.NodeMask = 0;
+
+    ComPtr&lt;ID3D12CommandQueue&gt; queue;
+    HRESULT hr = device-&gt;CreateCommandQueue(&desc, IID_PPV_ARGS(&queue));
+    if (FAILED(hr)) throw std::runtime_error("Failed to create command queue");
+
+    return queue;
+}
+        </code></pre>
+
+        <!-- ── 5. MERMAID DIAGRAM ── -->
+        <!-- Jenis: flowchart, sequenceDiagram, classDiagram, stateDiagram, gantt, erDiagram -->
+        <div class="mermaid">
+flowchart TD
+    A["CPU: Build Command List"] --> B["Submit to Command Queue"]
+    B --> C["GPU: Execute"]
+    C --> D{Done?}
+    D -- Yes --> E["Signal Fence"]
+    D -- No  --> C
+    E --> F["CPU: Wait on Fence"]
+    F --> G["Present Frame"]
+        </div>
+
+        <!-- ── 6. TABEL ── -->
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>API</th>
+                <th>Platform</th>
+                <th>Overhead</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>DirectX 12</td>
+                <td>Windows</td>
+                <td>Rendah</td>
+                <td>Eksplisit, kontrol penuh atas GPU</td>
+              </tr>
+              <tr>
+                <td>Vulkan</td>
+                <td>Cross-platform</td>
+                <td>Rendah</td>
+                <td>Paling verbose, paling fleksibel</td>
+              </tr>
+              <tr>
+                <td>Metal</td>
+                <td>Apple</td>
+                <td>Rendah</td>
+                <td>Dioptimasi untuk ekosistem Apple</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ── 7. CHECKLIST ── -->
+        <h3>Checklist Implementasi</h3>
+        <ul class="checklist">
+          <li class="checked">Setup swap chain</li>
+          <li class="checked">Buat command allocator</li>
+          <li class="checked">Buat command list</li>
+          <li>Record draw calls</li>
+          <li>Execute di command queue</li>
+          <li>Present frame</li>
+        </ul>
+
+        <!-- ── 8. GAMBAR ISIAN (inline figure) ── -->
+        <figure class="article-figure">
+          <img
+            src="[PREFIX]src/images/articles/SLUG-figure-01.png"
+            alt="Deskripsi gambar yang jelas dan informatif"
+            loading="lazy"
+            onerror="this.parentElement.style.display='none'"
+          >
+          <figcaption>Gambar 1: Penjelasan singkat tentang apa yang ditampilkan gambar ini.</figcaption>
+        </figure>
+
+        <!-- ── 9. BLOCKQUOTE ── -->
+        <blockquote>
+          "Make it work, then make it right, then make it fast."
+          <cite>— Kent Beck</cite>
+        </blockquote>
+
+        <!-- ── 10. FORMULA ── -->
+        <p class="formula">
+          L<sub>o</sub>(p, ω<sub>o</sub>) = L<sub>e</sub>(p, ω<sub>o</sub>) +
+          ∫<sub>Ω</sub> f<sub>r</sub>(p, ω<sub>i</sub>, ω<sub>o</sub>)
+          L<sub>i</sub>(p, ω<sub>i</sub>) (n · ω<sub>i</sub>) dω<sub>i</sub>
+        </p>
+
+        <!-- ── 11. SECTION SEPARATOR ── -->
+        <hr class="section-sep">
+
+        <h2>Section Berikutnya</h2>
+        <p>Lanjutkan konten di sini...</p>
+
+        <!-- ── 12. KODE BAHASA LAIN (GLSL/HLSL) ── -->
+        <pre><code class="language-glsl">
+// Fragment Shader — PBR (GLSL)
+#version 450
+
+layout(location = 0) in vec3 fragNormal;
+layout(location = 1) in vec3 fragPos;
+layout(location = 2) in vec2 fragUV;
+
+layout(location = 0) out vec4 outColor;
+
+layout(binding = 0) uniform sampler2D albedoMap;
+layout(binding = 1) uniform sampler2D normalMap;
+layout(binding = 2) uniform sampler2D metallicRoughnessMap;
+
+void main() {
+    vec3 albedo    = texture(albedoMap, fragUV).rgb;
+    vec2 mr        = texture(metallicRoughnessMap, fragUV).gb;
+    float metallic = mr.y;
+    float roughness = mr.x;
+
+    // ... lighting calculation
+    outColor = vec4(albedo, 1.0);
+}
+        </code></pre>
+
+        <!-- ── 13. PENUTUP / KESIMPULAN ── -->
+        <h2>Kesimpulan</h2>
+        <p>
+          Tulis kesimpulan artikel di sini. Rangkum poin-poin utama yang sudah dibahas
+          dan berikan langkah selanjutnya atau referensi lanjutan bagi pembaca.
+        </p>
+
+        <div class="callout callout-tip">
+          <span class="callout-icon">📚</span>
+          <div>
+            <strong>Referensi Lanjutan:</strong>
+            <ul style="margin-top: 8px; padding-left: 20px; list-style: disc;">
+              <li><a href="#">Link referensi 1</a></li>
+              <li><a href="#">Link referensi 2</a></li>
+            </ul>
+          </div>
+        </div>
+
+      </article>
+    </div><!-- .article-layout -->
+  </div><!-- .container -->
+
+  <!-- ═══════════════════════════════════════════════════
+       PREV / NEXT NAVIGATION
+       ═══════════════════════════════════════════════════ -->
+  <div class="container">
+    <nav class="article-nav" aria-label="Navigasi artikel">
+      <a id="btn-prev-article" class="article-nav-btn prev" href="#">
+        <span class="nav-dir">← Artikel Sebelumnya</span>
+        <span class="nav-title">Memuat...</span>
+      </a>
+      <a id="btn-next-article" class="article-nav-btn next" href="#">
+        <span class="nav-dir">Artikel Berikutnya →</span>
+        <span class="nav-title">Memuat...</span>
+      </a>
+    </nav>
+
+    <!-- Related Articles -->
+    <section class="related-articles" aria-label="Artikel terkait">
+      <h3 class="related-title">Artikel Terkait</h3>
+      <div id="related-grid" class="related-grid">
+        <!-- Injected by article.js -->
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════════ -->
+  <footer id="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M4 4v20M4 4l20 20M24 4v20"
+            stroke="currentColor" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Nirawarana</span>
+      </div>
+      <p class="footer-meta">&copy; <span id="footer-year"></span> Nirawarana · Admin</p>
+      <nav class="footer-links">
+        <a href="[PREFIX]">Beranda</a>
+        <a href="[PREFIX]articles/">Semua Artikel</a>
+      </nav>
+    </div>
+  </footer>
+
+  <button id="scroll-top" aria-label="Kembali ke atas"></button>
+
+  <!-- ═══════════════════════════════════════════════════
+       SCRIPTS
+       ═══════════════════════════════════════════════════ -->
+  <!-- Mermaid (diagram) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <!-- Prism (syntax highlighting) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-glsl.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <!-- Article data & logic -->
+  <script src="[PREFIX]src/data.js"></script>
+  <script src="../src/article.js"></script>
+  <script>
+    document.getElementById("footer-year").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>

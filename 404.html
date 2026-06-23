@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Halaman Tidak Ditemukan · Nirawarana</title>
+  <link rel="icon" type="image/svg+xml" href="src/images/favicon.svg">
+  <link rel="stylesheet" href="src/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    .page-404 {
+      min-height: calc(100vh - 60px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--sp-12) var(--sp-6);
+    }
+    .page-404-inner { max-width: 480px; }
+    .error-code {
+      font-family: var(--font-mono);
+      font-size: clamp(5rem, 20vw, 9rem);
+      font-weight: 700;
+      color: var(--border-strong);
+      line-height: 1;
+      letter-spacing: -0.05em;
+      margin-bottom: var(--sp-6);
+      user-select: none;
+    }
+    .error-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: var(--sp-3);
+    }
+    .error-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: var(--sp-8);
+    }
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: 10px 24px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: var(--r-md);
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn-home:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+    .grid-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      margin-top: var(--sp-8);
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+
+  <header id="site-header">
+    <div class="container header-inner">
+      <a href="." class="logo" aria-label="Nirawarana — Beranda">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M4 4v20M4 4l20 20M24 4v20"
+            stroke="currentColor" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">Nirawarana</span>
+      </a>
+      <nav class="main-nav">
+        <a href=".">Beranda</a>
+        <a href="articles/">Semua Artikel</a>
+      </nav>
+      <button id="theme-toggle" aria-label="Toggle dark mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="page-404" id="hero">
+    <div class="page-404-inner hero-inner">
+      <div class="error-code" aria-hidden="true">404</div>
+      <h1 class="error-title">Halaman Tidak Ditemukan</h1>
+      <p class="error-desc">
+        Artikel atau halaman yang kamu cari tidak ada, mungkin sudah dipindahkan,
+        atau URL-nya salah ketik. Yuk kembali ke beranda dan telusuri konten lainnya.
+      </p>
+      <a href="." class="btn-home">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Kembali ke Beranda
+      </a>
+      <p class="grid-label">// ERROR_CODE: PAGE_NOT_FOUND · STATUS: 404</p>
+    </div>
+  </div>
+
+  <script src="src/data.js"></script>
+  <script src="src/app.js"></script>
+  <script>
+    // Only init theme on 404
+    document.addEventListener("DOMContentLoaded", () => {
+      const saved = localStorage.getItem("nirawarana-theme");
+      const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      const theme = saved || preferred;
+      document.documentElement.setAttribute("data-theme", theme);
+      const btn = document.getElementById("theme-toggle");
+      if (btn) btn.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme");
+        const next = cur === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("nirawarana-theme", next);
+      });
+    });
+  </script>
+</body>
+</html>

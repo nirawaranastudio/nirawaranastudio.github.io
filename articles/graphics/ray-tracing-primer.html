@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="article:slug"     content="ray-tracing-primer">
+  <meta name="article:category" content="graphics">
+  <meta name="article:date"     content="2025-01-02">
+  <meta name="article:readtime" content="16">
+  <meta name="article:author"   content="Admin">
+  <meta name="description"      content="Ray Tracing — A First Principles Primer — Nirawarana">
+  <meta property="og:title"     content="Ray Tracing — A First Principles Primer · Nirawarana">
+  <meta property="og:image"     content="../../src/images/covers/ray-tracing-primer-cover.svg">
+  <title>Ray Tracing — A First Principles Primer · Nirawarana</title>
+  <link rel="icon"       type="image/svg+xml" href="../../src/images/logo.svg">
+  <link rel="stylesheet" href="../../src/style.css">
+  <link rel="stylesheet" href="../src/article.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+  <div id="reading-progress"></div>
+  <header id="site-header">
+    <div class="container header-inner">
+      <a href="../../" class="logo">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none"><path d="M4 4v20M4 4l20 20M24 4v20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="logo-text">Nirawarana</span>
+      </a>
+      <nav class="main-nav">
+        <a href="../../">Beranda</a>
+        <a href="../../articles/">Semua Artikel</a>
+        <a href="../../articles/?category=graphics" class="active">Graphics</a>
+      </nav>
+      <button id="theme-toggle" aria-label="Toggle dark mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="article-hero">
+    <div class="article-hero-cover-placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    </div>
+    <div class="container article-hero-meta">
+      <nav class="article-breadcrumb">
+        <a href="../../">Beranda</a><span class="sep">/</span>
+        <a href="../../articles/">Artikel</a><span class="sep">/</span>
+        <a href="../../articles/?category=graphics">Graphics</a><span class="sep">/</span>
+        <span>Ray Tracing — A First Principles Primer</span>
+      </nav>
+      <span class="article-category-badge" style="background:#a85be822;color:#a85be8;border:1.5px solid #a85be844;">
+        ● Graphics
+      </span>
+      <h1 class="article-title">Ray Tracing — A First Principles Primer</h1>
+      <div class="article-byline">
+        <span>Oleh Admin</span>
+        <span class="dot-sep">·</span>
+        <time datetime="2025-01-02">2025-01-02</time>
+        <span class="dot-sep">·</span>
+        <span>⏱ 16 menit baca</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="article-layout">
+      <nav id="toc" aria-label="Daftar isi"></nav>
+      <article class="prose" id="article-content">
+
+        <div class="callout callout-info">
+          <span class="callout-icon">🚧</span>
+          <div><strong>Artikel dalam pengerjaan.</strong> Konten lengkap akan segera hadir. Template dan struktur halaman ini sudah siap — tinggal isi kontennya!</div>
+        </div>
+
+        <h2>Pendahuluan</h2>
+        <p>Artikel <strong>Ray Tracing — A First Principles Primer</strong> sedang dalam proses penulisan. Gunakan file <code>articles/_template/article-template.html</code> sebagai panduan untuk mengisi konten artikel ini.</p>
+
+        <h2>Cara Mengisi Artikel Ini</h2>
+        <p>Salin konten dari template, lalu isi bagian-bagian berikut:</p>
+        <ul class="checklist">
+          <li>Isi semua tag <code>&lt;meta&gt;</code> di bagian <code>&lt;head&gt;</code></li>
+          <li>Tambahkan cover image ke <code>src/images/covers/ray-tracing-primer-cover.png</code></li>
+          <li>Tulis konten artikel di dalam <code>.prose</code></li>
+          <li>Gunakan komponen: code block, mermaid, tabel, checklist, callout</li>
+          <li>Update <code>src/data.js</code> dan <code>articles/src/data.js</code></li>
+        </ul>
+
+        <h2>Komponen Tersedia</h2>
+        <pre><code class="language-cpp">// Contoh code block — ganti dengan kode aktual artikel
+// Prism.js akan otomatis memberikan syntax highlighting
+
+#include &lt;iostream&gt;
+int main() {
+    std::cout &lt;&lt; "Hello, Nirawarana!" &lt;&lt; std::endl;
+    return 0;
+}
+</code></pre>
+
+        <div class="mermaid">
+flowchart LR
+    A[Buka Template] --> B[Isi Konten]
+    B --> C[Tambah Gambar]
+    C --> D[Update data.js]
+    D --> E[Push ke GitHub]
+        </div>
+
+      </article>
+    </div>
+  </div>
+
+  <div class="container">
+    <nav class="article-nav" aria-label="Navigasi artikel">
+      <a id="btn-prev-article" class="article-nav-btn prev" href="#">
+        <span class="nav-dir">← Artikel Sebelumnya</span>
+        <span class="nav-title">Memuat...</span>
+      </a>
+      <a id="btn-next-article" class="article-nav-btn next" href="#">
+        <span class="nav-dir">Artikel Berikutnya →</span>
+        <span class="nav-title">Memuat...</span>
+      </a>
+    </nav>
+    <section class="related-articles">
+      <h3 class="related-title">Artikel Terkait</h3>
+      <div id="related-grid" class="related-grid"></div>
+    </section>
+  </div>
+
+  <footer id="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none"><path d="M4 4v20M4 4l20 20M24 4v20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Nirawarana</span>
+      </div>
+      <p class="footer-meta">&copy; <span id="footer-year"></span> Nirawarana · Admin</p>
+      <nav class="footer-links">
+        <a href="../../">Beranda</a>
+        <a href="../../articles/">Semua Artikel</a>
+      </nav>
+    </div>
+  </footer>
+  <button id="scroll-top" aria-label="Kembali ke atas"></button>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../../src/data.js"></script>
+  <script src="../src/article.js"></script>
+  <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
