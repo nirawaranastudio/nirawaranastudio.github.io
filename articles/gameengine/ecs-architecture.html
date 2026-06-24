@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="article:slug"     content="ecs-architecture">
-  <meta name="article:category" content="gameengine">
-  <meta name="article:date"     content="2025-01-28">
-  <meta name="article:readtime" content="12">
-  <meta name="article:author"   content="Admin">
-  <meta name="description"      content="Entity-Component-System Architecture — Nirawarana">
-  <meta property="og:title"     content="Entity-Component-System Architecture · Nirawarana">
-  <meta property="og:image"     content="../../src/images/covers/ecs-architecture-cover.svg">
+  <meta name="article:slug"        content="ecs-architecture">
+  <meta name="article:category"    content="gameengine">
+  <meta name="article:subcategory" content="">
+  <meta name="article:tags"        content="ecs, architecture, game-engine, data-oriented, component, system, cpp">
+  <meta name="article:date"        content="2025-01-28">
+  <meta name="article:readtime"    content="12">
+  <meta name="article:author"      content="Admin">
+  <meta name="description"         content="Deep dive ke paradigma ECS: entity, component, system — cache-friendly layout dan implementasi C++ dari nol.">
+  <meta property="og:title"        content="Entity-Component-System Architecture · Nirawarana">
   <title>Entity-Component-System Architecture · Nirawarana</title>
-  <link rel="icon"       type="image/svg+xml" href="../../src/images/logo.svg">
+  <link rel="icon"       type="image/svg+xml" href="../../src/images/favicon.svg">
   <link rel="stylesheet" href="../../src/style.css">
   <link rel="stylesheet" href="../src/article.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
@@ -20,132 +21,555 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
-  <div id="reading-progress"></div>
-  <header id="site-header">
-    <div class="container header-inner">
-      <a href="../../" class="logo">
-        <svg class="logo-mark" viewBox="0 0 28 28" fill="none"><path d="M4 4v20M4 4l20 20M24 4v20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span class="logo-text">Nirawarana</span>
-      </a>
-      <nav class="main-nav">
-        <a href="../../">Beranda</a>
-        <a href="../../articles/">Semua Artikel</a>
-        <a href="../../articles/?category=gameengine" class="active">Game Engine</a>
-      </nav>
-      <button id="theme-toggle" aria-label="Toggle dark mode">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-    </div>
-  </header>
 
-  <div class="article-hero">
-    <div class="article-hero-cover-placeholder">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    </div>
-    <div class="container article-hero-meta">
-      <nav class="article-breadcrumb">
-        <a href="../../">Beranda</a><span class="sep">/</span>
-        <a href="../../articles/">Artikel</a><span class="sep">/</span>
-        <a href="../../articles/?category=gameengine">Game Engine</a><span class="sep">/</span>
-        <span>Entity-Component-System Architecture</span>
-      </nav>
-      <span class="article-category-badge" style="background:#3a9be022;color:#3a9be0;border:1.5px solid #3a9be044;">
-        ● Game Engine
-      </span>
-      <h1 class="article-title">Entity-Component-System Architecture</h1>
-      <div class="article-byline">
+<div id="reading-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+
+<header id="site-header">
+  <div class="container header-inner">
+    <a href="../../" class="logo">
+      <svg class="logo-mark" viewBox="0 0 28 28" fill="none">
+        <path d="M4 4v20M4 4l20 20M24 4v20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-text">Nirawarana</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../../">Beranda</a>
+      <a href="../../articles/">Semua Artikel</a>
+      <a href="../../articles/?category=rendering">Rendering</a>
+      <a href="../../articles/?category=gameengine" class="active">Game Engine</a>
+      <a href="../../articles/?category=architecture">Architecture</a>
+    </nav>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="article-hero-cover-placeholder" style="background:linear-gradient(135deg,#0a1a2e 0%,#0d2b1a 50%,#1a1a0a 100%);height:280px;display:flex;align-items:center;justify-content:center;">
+    <svg width="90" height="90" viewBox="0 0 90 90" fill="none" style="opacity:.25">
+      <rect x="10" y="10" width="20" height="20" rx="4" fill="#3a9be0"/>
+      <rect x="35" y="10" width="20" height="20" rx="4" fill="#22c87a"/>
+      <rect x="60" y="10" width="20" height="20" rx="4" fill="#f0a040"/>
+      <rect x="10" y="35" width="20" height="20" rx="4" fill="#22c87a"/>
+      <rect x="35" y="35" width="20" height="20" rx="4" fill="#3a9be0"/>
+      <rect x="60" y="35" width="20" height="20" rx="4" fill="#22c87a"/>
+      <rect x="10" y="60" width="70" height="20" rx="4" fill="#3a9be0" opacity=".5"/>
+    </svg>
+  </div>
+  <div class="container article-hero-meta">
+    <nav class="article-breadcrumb">
+      <a href="../../">Beranda</a><span class="sep">/</span>
+      <a href="../../articles/">Artikel</a><span class="sep">/</span>
+      <a href="../../articles/?category=gameengine">Game Engine</a><span class="sep">/</span>
+      <span>ECS Architecture</span>
+    </nav>
+    <span class="article-category-badge" style="background:#3a9be011;color:#3a9be0;border:1.5px solid #3a9be033;">● Game Engine</span>
+    <h1 class="article-title">Entity-Component-System Architecture</h1>
+    <div class="article-byline" style="justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:var(--sp-5);flex-wrap:wrap">
         <span>Oleh Admin</span>
         <span class="dot-sep">·</span>
-        <time datetime="2025-01-28">2025-01-28</time>
+        <time datetime="2025-01-28">28 Januari 2025</time>
         <span class="dot-sep">·</span>
         <span>⏱ 12 menit baca</span>
       </div>
+      <span id="reading-estimate" aria-live="polite"></span>
+    </div>
+    <div class="article-tags">
+      <span class="article-tag">#ecs</span>
+      <span class="article-tag">#game-engine</span>
+      <span class="article-tag">#data-oriented</span>
+      <span class="article-tag">#cpp</span>
+      <span class="article-tag">#architecture</span>
     </div>
   </div>
+</div>
 
-  <div class="container">
-    <div class="article-layout">
-      <nav id="toc" aria-label="Daftar isi"></nav>
-      <article class="prose" id="article-content">
+<div class="container">
+  <button id="toc-toggle-btn" aria-expanded="false" aria-controls="toc">Daftar Isi</button>
+  <div class="article-layout">
 
-        <div class="callout callout-info">
-          <span class="callout-icon">🚧</span>
-          <div><strong>Artikel dalam pengerjaan.</strong> Konten lengkap akan segera hadir. Template dan struktur halaman ini sudah siap — tinggal isi kontennya!</div>
+    <nav id="toc" aria-label="Daftar isi"></nav>
+
+    <article class="prose" id="article-content">
+
+      <p>
+        Entity-Component-System (ECS) adalah pola arsitektur yang mendominasi game engine modern —
+        dari Unity (DOTS), Unreal (Mass Entity), hingga engine indie seperti Bevy dan Flecs.
+        ECS bukan sekadar tren; ia hadir karena menjawab masalah nyata: skalabilitas,
+        performa cache, dan fleksibilitas desain yang tidak bisa diberikan oleh OOP konvensional.
+      </p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div>
+          <strong>Artikel ini membahas:</strong> konsep ECS, masalah yang ia selesaikan,
+          implementasi minimal di C++, perbandingan dengan pendekatan OOP, dan layout
+          memori cache-friendly untuk performa maksimal.
         </div>
+      </div>
 
-        <h2>Pendahuluan</h2>
-        <p>Artikel <strong>Entity-Component-System Architecture</strong> sedang dalam proses penulisan. Gunakan file <code>articles/_template/article-template.html</code> sebagai panduan untuk mengisi konten artikel ini.</p>
+      <h2>Masalah dengan OOP Konvensional</h2>
 
-        <h2>Cara Mengisi Artikel Ini</h2>
-        <p>Salin konten dari template, lalu isi bagian-bagian berikut:</p>
-        <ul class="checklist">
-          <li>Isi semua tag <code>&lt;meta&gt;</code> di bagian <code>&lt;head&gt;</code></li>
-          <li>Tambahkan cover image ke <code>src/images/covers/ecs-architecture-cover.png</code></li>
-          <li>Tulis konten artikel di dalam <code>.prose</code></li>
-          <li>Gunakan komponen: code block, mermaid, tabel, checklist, callout</li>
-          <li>Update <code>src/data.js</code> dan <code>articles/src/data.js</code></li>
-        </ul>
+      <p>
+        Dalam game engine berbasis OOP klasik, kita biasanya membuat hierarki kelas seperti ini:
+      </p>
 
-        <h2>Komponen Tersedia</h2>
-        <pre><code class="language-cpp">// Contoh code block — ganti dengan kode aktual artikel
-// Prism.js akan otomatis memberikan syntax highlighting
+      <div class="mermaid">
+classDiagram
+    class GameObject {
+      +position: vec3
+      +update()
+      +render()
+    }
+    class PhysicsObject {
+      +velocity: vec3
+      +mass: float
+      +applyForce()
+    }
+    class RenderableObject {
+      +mesh: Mesh*
+      +material: Material*
+      +draw()
+    }
+    class Enemy {
+      +health: int
+      +attack()
+      +die()
+    }
+    GameObject <|-- PhysicsObject
+    PhysicsObject <|-- RenderableObject
+    RenderableObject <|-- Enemy
+      </div>
 
-#include &lt;iostream&gt;
+      <p>
+        Masalah mulai muncul saat game semakin kompleks. Bagaimana jika kita ingin
+        <strong>objek yang bisa di-render tapi tidak punya fisika?</strong>
+        Atau objek yang invisible tapi tetap punya collision? Inheritance tree menjadi
+        tidak fleksibel — setiap kombinasi fitur membutuhkan subclass baru.
+        Ini disebut <em>the diamond problem</em> dan <em>inheritance hell</em>.
+      </p>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div>
+          <strong>Inheritance Hell:</strong> Semakin dalam hierarki inheritance, semakin
+          sulit untuk mengubah behavior satu objek tanpa memengaruhi yang lain.
+          Juga, cache miss meningkat karena objek-objek tersebar acak di heap.
+        </div>
+      </div>
+
+      <h2>Paradigma ECS: Tiga Konsep Inti</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Konsep</th><th>Definisi</th><th>Contoh</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Entity</strong></td>
+              <td>ID unik — bukan objek, hanya angka</td>
+              <td><code>uint32_t entityId = 42;</code></td>
+            </tr>
+            <tr>
+              <td><strong>Component</strong></td>
+              <td>Data murni, tanpa logika</td>
+              <td><code>struct Position { float x, y, z; };</code></td>
+            </tr>
+            <tr>
+              <td><strong>System</strong></td>
+              <td>Logika murni, iterasi atas komponen</td>
+              <td><code>void MovementSystem(Position&amp;, Velocity&amp;);</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mermaid">
+flowchart LR
+    subgraph Entities
+      E1["Entity 1\n(Player)"]
+      E2["Entity 2\n(Enemy)"]
+      E3["Entity 3\n(Bullet)"]
+    end
+    subgraph Components
+      P["Position[]"]
+      V["Velocity[]"]
+      H["Health[]"]
+      R["Renderable[]"]
+    end
+    subgraph Systems
+      MS["Movement System\nreads: Position, Velocity"]
+      RS["Render System\nreads: Position, Renderable"]
+      CS["Combat System\nreads: Health, Position"]
+    end
+    E1 --> P & V & H & R
+    E2 --> P & V & H & R
+    E3 --> P & V & R
+    P & V --> MS
+    P & R --> RS
+    H & P --> CS
+      </div>
+
+      <h2>Implementasi Minimal di C++</h2>
+
+      <p>
+        Implementasi ECS yang benar-benar produksi (seperti EnTT atau Flecs) sangat kompleks.
+        Berikut implementasi minimal yang menjelaskan konsep intinya:
+      </p>
+
+      <h3>Component Storage — Array of Structs</h3>
+
+      <pre><code class="language-cpp">#include &lt;cstdint&gt;
+#include &lt;unordered_map&gt;
+#include &lt;vector&gt;
+#include &lt;typeindex&gt;
+#include &lt;memory&gt;
+#include &lt;functional&gt;
+
+using EntityID = uint32_t;
+
+// Base storage interface
+struct IComponentArray {
+    virtual ~IComponentArray() = default;
+    virtual void remove(EntityID id) = 0;
+};
+
+// Typed dense component storage
+template&lt;typename T&gt;
+struct ComponentArray : IComponentArray {
+    std::vector&lt;T&gt;         components;     // dense array
+    std::vector&lt;EntityID&gt;  entities;       // parallel: entity per slot
+    std::unordered_map&lt;EntityID, size_t&gt; indexMap; // entity → slot
+
+    void insert(EntityID id, T component) {
+        indexMap[id] = components.size();
+        components.push_back(component);
+        entities.push_back(id);
+    }
+
+    T* get(EntityID id) {
+        auto it = indexMap.find(id);
+        if (it == indexMap.end()) return nullptr;
+        return &components[it->second];
+    }
+
+    void remove(EntityID id) override {
+        auto it = indexMap.find(id);
+        if (it == indexMap.end()) return;
+
+        // Swap with last to keep array dense
+        size_t idx     = it->second;
+        size_t last    = components.size() - 1;
+        EntityID lastId = entities[last];
+
+        components[idx] = components[last];
+        entities[idx]   = lastId;
+        indexMap[lastId] = idx;
+
+        components.pop_back();
+        entities.pop_back();
+        indexMap.erase(id);
+    }
+};
+</code></pre>
+
+      <h3>World — Registry Utama</h3>
+
+      <pre><code class="language-cpp">struct World {
+    EntityID nextId = 1;
+
+    // Component storages keyed by type
+    std::unordered_map&lt;std::type_index,
+        std::unique_ptr&lt;IComponentArray&gt;&gt; storages;
+
+    EntityID createEntity() { return nextId++; }
+
+    void destroyEntity(EntityID id) {
+        for (auto& [_, storage] : storages)
+            storage->remove(id);
+    }
+
+    template&lt;typename T&gt;
+    void addComponent(EntityID id, T component) {
+        getStorage&lt;T&gt;().insert(id, component);
+    }
+
+    template&lt;typename T&gt;
+    T* getComponent(EntityID id) {
+        return getStorage&lt;T&gt;().get(id);
+    }
+
+    // Iterate all entities that have BOTH T and U
+    template&lt;typename T, typename U, typename Fn&gt;
+    void forEach(Fn&& fn) {
+        auto& ta = getStorage&lt;T&gt;();
+        for (size_t i = 0; i &lt; ta.entities.size(); ++i) {
+            EntityID id = ta.entities[i];
+            U* u = getComponent&lt;U&gt;(id);
+            if (u) fn(id, ta.components[i], *u);
+        }
+    }
+
+private:
+    template&lt;typename T&gt;
+    ComponentArray&lt;T&gt;& getStorage() {
+        auto key = std::type_index(typeid(T));
+        if (!storages.count(key))
+            storages[key] = std::make_unique&lt;ComponentArray&lt;T&gt;&gt;();
+        return static_cast&lt;ComponentArray&lt;T&gt;&amp;&gt;(*storages[key]);
+    }
+};
+</code></pre>
+
+      <h3>Mendefinisikan Komponen dan Sistem</h3>
+
+      <pre><code class="language-cpp">// Pure data components
+struct Position { float x, y, z; };
+struct Velocity { float vx, vy, vz; };
+struct Health   { int current, max; };
+struct Renderable {
+    uint32_t meshId;
+    uint32_t materialId;
+    bool     visible = true;
+};
+
+// Systems — pure functions
+void movementSystem(World& world, float dt) {
+    world.forEach&lt;Position, Velocity&gt;([dt](EntityID, Position& pos, Velocity& vel) {
+        pos.x += vel.vx * dt;
+        pos.y += vel.vy * dt;
+        pos.z += vel.vz * dt;
+    });
+}
+
+void healthSystem(World& world) {
+    world.forEach&lt;Health, Renderable&gt;([](EntityID, Health& hp, Renderable& r) {
+        // Hide entity if dead
+        if (hp.current &lt;= 0) r.visible = false;
+    });
+}
+
+// Main game loop
 int main() {
-    std::cout &lt;&lt; "Hello, Nirawarana!" &lt;&lt; std::endl;
-    return 0;
+    World world;
+
+    // Create player
+    EntityID player = world.createEntity();
+    world.addComponent(player, Position{ 0, 0, 0 });
+    world.addComponent(player, Velocity{ 5, 0, 0 });
+    world.addComponent(player, Health{ 100, 100 });
+    world.addComponent(player, Renderable{ 1, 2 });
+
+    // Create 1000 enemies effortlessly
+    for (int i = 0; i &lt; 1000; ++i) {
+        EntityID e = world.createEntity();
+        world.addComponent(e, Position{ (float)i * 2.f, 0, 0 });
+        world.addComponent(e, Velocity{ -1.f, 0, 0 });
+        world.addComponent(e, Health{ 50, 50 });
+        world.addComponent(e, Renderable{ 3, 4 });
+    }
+
+    const float dt = 1.0f / 60.f;
+    while (true) {
+        movementSystem(world, dt);
+        healthSystem(world);
+        // renderSystem(world, renderer);
+    }
 }
 </code></pre>
 
-        <div class="mermaid">
-flowchart LR
-    A[Buka Template] --> B[Isi Konten]
-    B --> C[Tambah Gambar]
-    C --> D[Update data.js]
-    D --> E[Push ke GitHub]
-        </div>
+      <h2>Cache-Friendly Layout: SoA vs AoS</h2>
 
-      </article>
-    </div>
-  </div>
+      <p>
+        Salah satu keunggulan utama ECS adalah kemampuan untuk menyimpan komponen
+        dalam <strong>Structure of Arrays (SoA)</strong> alih-alih Array of Structures (AoS).
+      </p>
 
-  <div class="container">
-    <nav class="article-nav" aria-label="Navigasi artikel">
-      <a id="btn-prev-article" class="article-nav-btn prev" href="#">
-        <span class="nav-dir">← Artikel Sebelumnya</span>
-        <span class="nav-title">Memuat...</span>
-      </a>
-      <a id="btn-next-article" class="article-nav-btn next" href="#">
-        <span class="nav-dir">Artikel Berikutnya →</span>
-        <span class="nav-title">Memuat...</span>
-      </a>
-    </nav>
-    <section class="related-articles">
-      <h3 class="related-title">Artikel Terkait</h3>
-      <div id="related-grid" class="related-grid"></div>
-    </section>
-  </div>
-
-  <footer id="site-footer">
-    <div class="container footer-inner">
-      <div class="footer-brand">
-        <svg class="logo-mark" viewBox="0 0 28 28" fill="none"><path d="M4 4v20M4 4l20 20M24 4v20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Nirawarana</span>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Pendekatan</th><th>Layout Memori</th><th>Cache Behavior</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>AoS (OOP klasik)</strong></td>
+              <td><code>[pos|vel|hp][pos|vel|hp][pos|vel|hp]...</code></td>
+              <td>❌ Saat iterasi position, data vel dan hp ikut di-load (waste)</td>
+            </tr>
+            <tr>
+              <td><strong>SoA (ECS)</strong></td>
+              <td><code>[pos][pos][pos]... [vel][vel][vel]... [hp][hp]...</code></td>
+              <td>✅ Movement system hanya load position + velocity — 100% cache hit</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <p class="footer-meta">&copy; <span id="footer-year"></span> Nirawarana · Admin</p>
-      <nav class="footer-links">
-        <a href="../../">Beranda</a>
-        <a href="../../articles/">Semua Artikel</a>
-      </nav>
-    </div>
-  </footer>
-  <button id="scroll-top" aria-label="Kembali ke atas"></button>
 
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
-  <script src="../../src/data.js"></script>
-  <script src="../src/article.js"></script>
-  <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
+      <pre><code class="language-cpp">// AoS — BURUK untuk iterasi sistem
+struct GameObjectAoS {
+    Position   pos;      // 12 bytes
+    Velocity   vel;      // 12 bytes
+    Health     hp;       // 8 bytes
+    Renderable render;   // 12 bytes
+    // Total: 44 bytes per object — banyak terbuang saat iterasi pos saja
+};
+std::vector&lt;GameObjectAoS&gt; objects; // [44][44][44]...
+
+// SoA — BAIK: movement system hanya sentuh 24 bytes (pos+vel) per entity
+struct WorldSoA {
+    std::vector&lt;Position&gt;   positions;   // [12][12][12]...
+    std::vector&lt;Velocity&gt;   velocities;  // [12][12][12]...
+    std::vector&lt;Health&gt;     healths;     // hanya dimuat oleh combat system
+    std::vector&lt;Renderable&gt; renderables; // hanya dimuat oleh render system
+};
+// Cache line 64 bytes = 5 Position + 1 byte padding → hampir sempurna
+</code></pre>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">🎯</span>
+        <div>
+          <strong>Benchmark nyata:</strong> Pada 100.000 entitas, movement system
+          dengan SoA bisa <strong>5–10× lebih cepat</strong> dari AoS karena
+          cache hit rate yang jauh lebih tinggi. Ini bukan premature optimization —
+          ini fundamental design.
+        </div>
+      </div>
+
+      <h2>ECS vs OOP — Perbandingan Lengkap</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Aspek</th><th>OOP (Inheritance)</th><th>ECS</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Komposisi fitur</td><td>❌ Butuh subclass baru</td><td>✅ Tambah/hapus komponen runtime</td></tr>
+            <tr><td>Cache performance</td><td>❌ Cache miss tinggi (heap scatter)</td><td>✅ Dense array, cache-friendly</td></tr>
+            <tr><td>Parallelisme</td><td>❌ Shared state, data race</td><td>✅ System bisa dijalankan parallel</td></tr>
+            <tr><td>Testability</td><td>⚠️ Butuh mock object</td><td>✅ System adalah pure function</td></tr>
+            <tr><td>Serialisasi</td><td>❌ Kompleks (virtual, pointer)</td><td>✅ Trivially serializable components</td></tr>
+            <tr><td>Learning curve</td><td>✅ Familiar untuk developer</td><td>⚠️ Paradigma baru, perlu adaptasi</td></tr>
+            <tr><td>Tooling</td><td>✅ Luas dukungan IDE</td><td>⚠️ Terbatas, tapi berkembang pesat</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Checklist Implementasi ECS</h2>
+
+      <ul class="checklist">
+        <li class="checked">Definisikan Entity sebagai ID integer (uint32_t)</li>
+        <li class="checked">Buat ComponentArray dengan dense storage + sparse map</li>
+        <li class="checked">Buat World sebagai registry komponent per type</li>
+        <li class="checked">Tulis System sebagai free function atau functor</li>
+        <li class="checked">Implementasi <code>forEach&lt;T, U&gt;</code> untuk iterasi multi-komponen</li>
+        <li>Tambahkan <strong>Archetype</strong> untuk pengelompokan entity sejenis</li>
+        <li>Implementasi <strong>Query cache</strong> untuk menghindari iterasi ulang</li>
+        <li>Tambahkan <strong>Event system</strong> untuk komunikasi antar system</li>
+        <li>Implementasi <strong>Entity handle versioning</strong> (generation counter) untuk mencegah dangling ID</li>
+        <li>Profiling: GPU-assisted instancing dari component data</li>
+      </ul>
+
+      <h2>Library ECS yang Direkomendasikan</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Library</th><th>Bahasa</th><th>Keunggulan</th><th>Dipakai di</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><a href="https://github.com/skypjack/entt" target="_blank">EnTT</a></td><td>C++17</td><td>Header-only, production-proven, sparse set</td><td>Minecraft Bedrock</td></tr>
+            <tr><td><a href="https://www.flecs.dev/" target="_blank">Flecs</a></td><td>C/C++</td><td>Archetype-based, query language, hierarchies</td><td>AAA games, Unreal plugin</td></tr>
+            <tr><td>Unity DOTS</td><td>C#</td><td>Burst compiler, job system integration</td><td>Unity games</td></tr>
+            <tr><td><a href="https://bevyengine.org/" target="_blank">Bevy ECS</a></td><td>Rust</td><td>Type-safe, parallel by default</td><td>Bevy engine</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="article-actions">
+        <button id="share-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Bagikan Artikel
+        </button>
+        <button class="print-btn" onclick="window.print()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Cetak
+        </button>
+        <span id="reading-estimate" style="margin-left:auto" aria-live="polite"></span>
+      </div>
+
+      <hr class="section-sep">
+
+      <h2>Kesimpulan</h2>
+
+      <p>
+        ECS bukan silver bullet, tapi ia adalah <strong>alat yang tepat untuk game engine</strong>
+        yang perlu mengelola ribuan hingga jutaan entitas dengan performa tinggi.
+        Kunci suksesnya: data terpisah dari logika, layout memori yang cache-friendly,
+        dan sistem yang bisa dijalankan secara independen dan paralel.
+      </p>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">📚</span>
+        <div>
+          <strong>Baca Selanjutnya:</strong>
+          <ul style="margin-top:8px;padding-left:20px;list-style:disc">
+            <li><a href="../../articles/architecture/data-oriented-design.html">Data-Oriented Design Principles</a></li>
+            <li><a href="../../articles/architecture/cache-coherency.html">Cache Coherency & Memory Access Patterns</a></li>
+            <li><a href="asset-pipeline.html">Designing a Robust Asset Pipeline</a></li>
+          </ul>
+        </div>
+      </div>
+
+    </article>
+  </div>
+</div>
+
+<div class="container">
+  <nav class="article-nav" aria-label="Navigasi artikel">
+    <a id="btn-prev-article" class="article-nav-btn prev" href="#">
+      <span class="nav-dir">← Artikel Sebelumnya</span>
+      <span class="nav-title">Memuat...</span>
+    </a>
+    <a id="btn-next-article" class="article-nav-btn next" href="#">
+      <span class="nav-dir">Artikel Berikutnya →</span>
+      <span class="nav-title">Memuat...</span>
+    </a>
+  </nav>
+  <section class="related-articles">
+    <h3 class="related-title">Artikel Terkait</h3>
+    <div id="related-grid" class="related-grid"></div>
+  </section>
+</div>
+
+<footer id="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <svg class="logo-mark" viewBox="0 0 28 28" fill="none">
+        <path d="M4 4v20M4 4l20 20M24 4v20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Nirawarana</span>
+    </div>
+    <p class="footer-meta">&copy; <span id="footer-year"></span> Nirawarana · Admin</p>
+    <nav class="footer-links">
+      <a href="../../">Beranda</a>
+      <a href="../../articles/">Semua Artikel</a>
+    </nav>
+  </div>
+</footer>
+
+<button id="scroll-top" aria-label="Kembali ke atas"></button>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+<script src="../../src/data.js"></script>
+<script src="../src/article.js"></script>
+<script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
+
 </body>
 </html>

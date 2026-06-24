@@ -53,17 +53,18 @@
         ● Game Engine
       </span>
       <h1 class="article-title">Designing a Robust Asset Pipeline</h1>
-      <div class="article-byline">
+      <div class="article-byline" style="justify-content:space-between"><div style="display:flex;align-items:center;gap:var(--sp-5);flex-wrap:wrap">
         <span>Oleh Admin</span>
         <span class="dot-sep">·</span>
         <time datetime="2025-01-18">2025-01-18</time>
         <span class="dot-sep">·</span>
         <span>⏱ 13 menit baca</span>
-      </div>
+      </div><span id="reading-estimate" aria-live="polite"></span></div>
     </div>
   </div>
 
   <div class="container">
+    <button id="toc-toggle-btn" aria-expanded="false" aria-controls="toc">Daftar Isi</button>
     <div class="article-layout">
       <nav id="toc" aria-label="Daftar isi"></nav>
       <article class="prose" id="article-content">
@@ -105,6 +106,16 @@ flowchart LR
     D --> E[Push ke GitHub]
         </div>
 
+      <div class="article-actions" style="margin-top:var(--sp-6)">
+        <button id="share-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Bagikan Artikel
+        </button>
+        <button class="print-btn" onclick="window.print()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Cetak
+        </button>
+      </div>
       </article>
     </div>
   </div>
